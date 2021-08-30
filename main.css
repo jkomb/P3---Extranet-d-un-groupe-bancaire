@@ -1,0 +1,334 @@
+/* Définition des polices personnalisées */
+
+@font-face {
+    font-family: 'latoregular';
+    src: url('../fonts/lato-regular-webfont.woff2') format('woff2'),
+         url('../fonts/lato-regular-webfont.woff') format('woff'),
+         url('../fonts/Lato-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Eléments principaux de la page */
+
+body
+{
+    background: url('../images/hexagon_background.png');
+    font-family: 'latoregular';
+    color: #181818;
+}
+
+#bloc_page
+{
+    width: auto;
+    margin: auto;
+}
+
+section h1, footer h1, nav a
+{
+    font-family: 'latoregular';
+    font-weight: normal;
+}
+
+/* Header */
+
+header
+{
+    background: url('../images/separateur_noir.png') no-repeat bottom;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items:stretch;
+    border: 1px solid #c3c3c3;
+}
+
+#titre_principal
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+#logo
+{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 1.5em;
+    font-weight: bold;
+    border: 1px solid #c3c3c3;
+}
+
+#logo img
+{
+    max-width: 40%;
+    height: auto;
+}
+
+#navigation
+{
+    display:flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
+    border: 1px solid #c3c3c3;
+}
+
+
+header h1
+{
+    font-family: 'latoregular';
+    font-size: 2.5em;
+    font-weight: normal;
+    margin: 0 0 0 10px;
+}
+
+header h2
+{
+    font-family: 'latoregular';
+    font-size: 0.8em;
+    margin-top: 0px;
+    font-weight: bold;
+}
+
+#deconnexion
+{
+
+}
+
+/* Navigation */
+
+nav ul
+{
+    list-style-type: none;
+    display: flex;
+}
+
+nav li
+{
+    margin-right: 15px;
+}
+
+nav a
+{
+    font-size: 1.3em;
+    color: #181818;
+    padding-bottom: 3px;
+    text-decoration: none;
+}
+
+nav a:hover
+{
+    color: #760001;
+    border-bottom: 3px solid #760001;
+}
+
+/* Bannière */
+
+#banniere_image
+{
+    margin-top: 15px;
+    height: 200px;
+    background-origin: initial;
+    background: url('../images/banniere_description.jpg') no-repeat;
+    position: relative;
+    margin-bottom: 25px;
+}
+
+#banniere_description
+{
+    position: absolute;
+    bottom: 0;
+    width: 99.5%;
+    height: 15px;
+    padding-top: 15px;
+    padding-left: 4px;
+    color: black;
+    font-size: 0.9em;
+
+}
+
+.bouton_rouge
+{
+    height: 25px;
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    background: url('../images/fond_degraderouge.png') repeat-x;
+    border: 1px solid #760001;
+    border-radius: 5px;
+    font-size: 1.2em;
+    text-align: center;
+    padding: 3px 8px 0px 8px;
+    color: white;
+    text-decoration: none;
+}
+
+.bouton_rouge img
+{
+    border: 0;
+}
+
+/* Corps */
+
+h1
+{
+  font-size: 2em;
+}
+
+section
+{
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.presentation
+{
+  background-color: #ffffff;
+  border: 1px solid #c3c3c3;
+  box-shadow: 2px 2px 2px 2px;
+}
+
+article, aside
+{
+    text-align: justify;
+}
+
+article
+{
+    margin-right: 20px;
+    flex: 3;
+}
+
+.logo
+{
+    max-width: 10%;
+    height: auto;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
+.logo_acteurs
+{
+    max-width: 100%;
+    height: auto;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+.section_acteurs
+{
+  display: flex;
+  flex-direction : column;
+  border: 1px solid #c3c3c3;
+  overflow: hidden;
+}
+
+.article_acteur
+{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  height: min-content;
+  text-overflow: ellipsis;
+  padding-bottom: 1em;
+  border: 1px solid #c3c3c3;
+}
+
+article p
+{
+    font-size: 0.8em;
+}
+
+aside
+{
+    flex: 1.2;
+    position: relative;
+    background-color: #706b64;
+    box-shadow: 0px 2px 5px #1c1a19;
+    border-radius: 5px;
+    padding: 10px;
+    color: white;
+    font-size: 0.9em;
+}
+
+#fleche_bulle
+{
+    position: absolute;
+    top: 100px;
+    left: -12px;
+}
+
+#photo_zozor
+{
+    text-align: center;
+}
+
+#photo_zozor img
+{
+    border: 1px solid #181818;
+}
+
+aside img
+{
+    margin-right: 5px;
+}
+
+/* Footer */
+
+footer
+{
+    display: flex;
+    background:  url('images/ico_top.png') no-repeat top center, url('images/separateur_noir.png') no-repeat top, url('images/ombre.png') repeat-x top;
+    padding-top: 25px;
+}
+
+footer p, footer ul
+{
+    font-size: 0.8em;
+}
+
+footer h1
+{
+    font-size: 1.1em;
+}
+
+
+#tweet
+{
+    width: 28%;
+}
+
+#mes_photos
+{
+    width: 35%;
+}
+
+#mes_amis
+{
+    width: 31%;
+}
+
+#mes_photos img
+{
+    border: 1px solid #181818;
+    margin-right: 2px;
+}
+
+#listes_amis
+{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0;
+}
+
+#mes_amis ul
+{
+    list-style-image: url('images/ico_liensexterne.png');
+    padding-left: 2px;
+}
+
+#mes_amis a
+{
+    text-decoration: none;
+    color: #760001;
+}
