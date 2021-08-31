@@ -38,8 +38,7 @@ header
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items:stretch;
-    border: 1px solid #c3c3c3;
+    align-items:stretch,center;
 }
 
 #titre_principal
@@ -56,7 +55,6 @@ header
     align-items: center;
     font-size: 1.5em;
     font-weight: bold;
-    border: 1px solid #c3c3c3;
 }
 
 #logo img
@@ -69,11 +67,24 @@ header
 {
     display:flex;
     flex-direction: column;
-    justify-content: space-between;
     align-items: flex-end;
-    border: 1px solid #c3c3c3;
+    justify-content: space-between;
 }
 
+#connexion_head
+{
+  text-align: center;
+}
+
+#creation_head
+{
+  display:flex;
+  flex-direction: row;
+  width:10em;
+  height:10em;
+  text-align:center;
+  padding:10px;
+}
 
 header h1
 {
@@ -89,11 +100,6 @@ header h2
     font-size: 0.8em;
     margin-top: 0px;
     font-weight: bold;
-}
-
-#deconnexion
-{
-
 }
 
 /* Navigation */
@@ -148,26 +154,6 @@ nav a:hover
 
 }
 
-.bouton_rouge
-{
-    height: 25px;
-    position: absolute;
-    right: 5px;
-    bottom: 5px;
-    background: url('../images/fond_degraderouge.png') repeat-x;
-    border: 1px solid #760001;
-    border-radius: 5px;
-    font-size: 1.2em;
-    text-align: center;
-    padding: 3px 8px 0px 8px;
-    color: white;
-    text-decoration: none;
-}
-
-.bouton_rouge img
-{
-    border: 0;
-}
 
 /* Corps */
 
@@ -239,38 +225,31 @@ article p
     font-size: 0.8em;
 }
 
-aside
+#titre_connexion
 {
-    flex: 1.2;
-    position: relative;
-    background-color: #706b64;
-    box-shadow: 0px 2px 5px #1c1a19;
-    border-radius: 5px;
-    padding: 10px;
-    color: white;
-    font-size: 0.9em;
+  text-align: center;
+  font-size: 1em;
 }
 
-#fleche_bulle
+#page_connexion
 {
-    position: absolute;
-    top: 100px;
-    left: -12px;
+  display:flex;
+  flex-direction: row;
+  justify-content: center;
+  text-align: center;
 }
 
-#photo_zozor
+.champs_connexion
 {
-    text-align: center;
+  display:flex;
+  flex-direction: column;
+  padding: 4px;
+  width : 20em;
 }
 
-#photo_zozor img
+#pwd_forgotten
 {
-    border: 1px solid #181818;
-}
-
-aside img
-{
-    margin-right: 5px;
+  font-size: 0.8em;
 }
 
 /* Footer */
