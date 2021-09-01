@@ -1,4 +1,5 @@
 
+
 <!--
   Données d'en-tête : ce sont les mêmes pour toutes les .
 
@@ -33,6 +34,14 @@
   </div>
 
   <?php
+
+      /*
+        Affichage de la navigation dans la page d'accueil pour créer
+        un nouveau compte.
+
+        Diplay of navigation menu in the welcome page to createa new account.
+      */
+
       if(!isset($_SESSION))
       {
         echo'
@@ -42,34 +51,39 @@
           <p>pour créer votre compte.</p>
         </div>';
       }
-      elseif (isset($_SESSION['page '])/*&&$_SESSION['page']=='creation'*/)
+
+      elseif(isset($_SESSION['page'])&&$_SESSION['page']=='creation')
       {
         echo'
         <div id="creation_head">
-          <p>Retourner à l\'<a href=connexion.php><strong>ACCUEIL</strong></a></p>
+          <p>Retourner à l\'<a href=accueil.php><strong>ACCUEIL</strong></a></p>
         </div>';
       }
-      else
+
+      elseif(isset($_SESSION['nom'])&&isset($_SESSION['prenom']))
       {
         //insérer l'avatar de l'utilsateur
-        echo'
+   ?>
         <div id="navigation">
+
             <div>
               <a href="accueil.php"<button>Se Déconnecter</button></a></br>
             </div>
-            <div>
-              Vous êtes connecté en tant que <strong>Prénom NOM</strong>.</br>
-            </div>
 
             <div>
+              Vous êtes connecté en tant que <?php echo $_SESSION['prenom'];?>
+              <strong> <?php echo $_SESSION['nom'];?></strong>
+            </div>
+
               <nav>
                 <ul>
-                  <li><a href="#">Accueil</a></li>
                   <li><a href="#">Mon Compte</a></li>
                 </ul>
               </nav>
-            </div>
-        </div>';
+
+        </div>
+
+    <?php
       }
   ?>
 

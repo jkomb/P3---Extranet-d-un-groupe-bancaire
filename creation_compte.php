@@ -7,6 +7,7 @@
 
   unset($_SESSION['page']);
 
+
 /*
 2.
 
@@ -55,7 +56,7 @@ On demande ensuite à ce qu'il réponde à sa question secrète.
 
 We then ask him to answer his secret question.
 */
-  elseif (isset($_POST['user_name']))
+  elseif(isset($_POST['user_name'])&&!isset($_POST['name']))
   {
     $POST['user_name']=htmlspecialchars($_POST['user_name']);
 
@@ -100,7 +101,7 @@ On demande enfin à l'utilisateur de saisir un nouveau mot de passe, 2 fois.
 
 Finally, we ask the user to type a new password, twice.
 */
-  elseif (isset($_POST['secret_answer']))
+  elseif (isset($_POST['secret_answer'])&&!isset($_POST['name']))
   {
     $POST['secret_answer']=htmlspecialchars($_POST['secret_answer']);
 
@@ -173,7 +174,7 @@ the whole process from scratch), the user is sent back to the welcome page.
 
       </div>';
 
-      header("refresh:2;url=connexion.php");
+      header("refresh:2;url=accueil.php");
     }
 
     if($POST['password']!=$POST['passwordbis'])
@@ -193,6 +194,49 @@ the whole process from scratch), the user is sent back to the welcome page.
     }
 
   }
+
+/*
+6.
+
+Lorsque la saisie des informations personnelles du compte a été un succès, on
+les enregistre dans la base de données et on redirige l'utilisateur
+vers l'accueil.
+
+When the user has successfully typed all his personal informations, we save them
+in the database and we redirect him to the welcome page.
+*/
+  elseif (isset($_POST['nom']))
+  {
+
+      $bdd = new PDO('mysql:host=localhost;dbname=extranet;charset=utf8', 'root', '',
+               array(PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION));
+
+      foreach($_POST as $element)
+      {
+        $element = htmlspecialchars($element);
+      }
+
+      $inscription = $bdd->prepare('INSERT INTO accounts(nom,prenom,username,password,question,reponse)
+                     VALUES(UPPER(:nom),:prenom,:username,:password,:question,:reponse)');
+      $inscription->execute($_POST);
+
+      //$nom_majuscule = $bdd->prepare('UPDATE accounts SET nom=UPPER(nom) WHERE')
+
+      $inscription->closeCursor();
+
+      echo'
+      <div id="titre_connexion">
+
+        <h2>Vos informations ont bien été enregistrées.</h2>
+        <br><br>
+        <p>Vous allez être redirigé vers la page d\'accueil</p>
+
+      </div>';
+
+      header("refresh:2;url=accueil.php");
+
+  }
+
 
 /*
 1.
@@ -216,21 +260,21 @@ informations.
 
     <div id="page_connexion">
 
-        <form  method="post" action="main.php">
+        <form  method="post" action="creation_compte.php">
 
           <div class="champs_connexion">
             <label><strong>Nom</strong></label>
-            <input type=text name=name autofocus required/>
+            <input type=text name=nom autofocus required/>
           </div>
 
           <div class="champs_connexion">
             <label><strong>Prénom</strong></label>
-            <input type=text name=surname required/>
+            <input type=text name=prenom required/>
           </div>
 
           <div class="champs_connexion">
-            <label><strong>Nom d"utilisateur</strong></label>
-            <input type=text name=user_name required/>
+            <label><strong>Nom d\'utilisateur</strong></label>
+            <input type=text name=username required/>
           </div>
 
           <div class="champs_connexion">
@@ -240,12 +284,12 @@ informations.
 
           <div class="champs_connexion">
             <label><strong>Question secrète</strong></label>
-            <input type=text name=secret_question required/>
+            <input type=text name=question required/>
           </div>
 
           <div class="champs_connexion">
             <label><strong>Réponse à la réponse secrète</strong></label>
-            <input type=password name=secret_answer required/>
+            <input type=password name=reponse required/>
           </div>
 
           <div class="champs_connexion">
@@ -256,5 +300,5 @@ informations.
     </div>';
   }
 
-
+  include('footer.php');
  ?>

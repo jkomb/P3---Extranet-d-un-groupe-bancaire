@@ -162,6 +162,11 @@ h1
   font-size: 2em;
 }
 
+h2
+{
+  font-size: 1.5em;
+}
+
 section
 {
     display: flex;
@@ -196,16 +201,15 @@ article
 
 .logo_acteurs
 {
-    max-width: 100%;
+    max-width: 10em;
     height: auto;
-    vertical-align: middle;
+    vertical-align: center;
     margin-right: 8px;
 }
 .section_acteurs
 {
   display: flex;
   flex-direction : column;
-  border: 1px solid #c3c3c3;
   overflow: hidden;
 }
 
@@ -213,11 +217,24 @@ article
 {
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
-  height: min-content;
-  text-overflow: ellipsis;
+  justify-content:space-between;
   padding-bottom: 1em;
   border: 1px solid #c3c3c3;
+}
+
+.logo_titre_acteur
+{
+  display: flex;
+  flex-direction: row;
+  justify-content:space-between;
+  padding-bottom: 1em;
+  border: 1px solid #c3c3c3;
+}
+
+.overflow
+{
+    max-width: 20em;
+    overflow:hidden;
 }
 
 article p

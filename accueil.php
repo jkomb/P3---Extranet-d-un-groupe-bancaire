@@ -5,47 +5,59 @@
     unset($_SESSION);
   }
 
-  include("header.php");
+  include('header.php');
 
+  session_start();
 
-
-  if(isset($_POST['user_name'])&&isset($_POST['password']))
+  if(isset($_POST['username'])&&isset($_POST['password']))
   {
-    /*
 
-    $_POST['user_name']=htmlspecialchars($_POST['user_name']);
+    $_POST['username']=htmlspecialchars($_POST['username']);
     $_POST['password']=htmlspecialchars($_POST['password']);
 
-    $bdd=new PDO('mysql:host=localhost;dbname=extranet;charset=utf8', 'root', '', array(PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION));
+    $bdd = new PDO('mysql:host=localhost;dbname=extranet;charset=utf8', 'root', '',
+               array(PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION));
 
-    $password = $bdd->query("SELECT password FROM account WHERE username='$_POST['user_name']);
+    $password = $bdd->prepare('SELECT password FROM accounts WHERE username=?');
+    $password->execute(array($_POST['username']));
+    $motdepasse = $password->fetch();
 
-
-    if($reponse['password']==$_POST['password'])
+    if($motdepasse['password']==$_POST['password'])
     {
-      $nom = $bdd->query("SELECT nom FROM account WHERE username='$_POST['user_name']);
-      $prenom = $bdd->query("SELECT prenom FROM account WHERE username='$_POST['user_name']);
+      $name = $bdd->prepare('SELECT nom FROM accounts WHERE username=?');
+      $name->execute(array($_POST['username']));
+      $nom = $name->fetch();
 
-      $_SESSION["utilisateur"]=$prenom." ".$nom;
+      $surname = $bdd->prepare('SELECT prenom FROM accounts WHERE username=?');
+      $surname->execute(array($_POST['username']));
+      $prenom = $surname->fetch();
 
-      header("refresh:0;url=main.php");
+      $_SESSION['prenom']=$prenom['prenom'];
+      $_SESSION['nom']=$nom['nom'];
+
+      $password->closeCursor();
+      $name->closeCursor();
+      $surname->closeCursor();
+
+      header('refresh:0;url=main.php');
     }
     else
     {
+      echo'
       <div id="titre_connexion">
 
-        <h1>Vos identifiants ne sont pas corrects</h1>
+        <h1>Vos identifiants ne sont pas corrects !</h1>
         <br><br><br>
-        <p>Vous allez être redirigé vers la page d\'accueil</p>
+        <h2>Vous allez être redirigé vers la page d\'accueil.</h2>
 
       </div>';
 
-      header("refresh:2;url=accueil.php");
+      header('refresh:3;url=accueil.php');
 
-      </div>
     }
-  */
+
   }
+
   else
   {
 ?>
@@ -64,7 +76,7 @@
       <form  method="post" action"accueil.php">
 
         <div class="champs_connexion">
-          <input type=text name=user_name placeholder="Nom d'utilisateur" autofocus required/>
+          <input type=text name=username placeholder="Nom d'utilisateur" autofocus required/>
         </div>
 
         <div class="champs_connexion">
@@ -87,4 +99,7 @@
 
 <?php
   }
+
+  include('footer.php');
+  
 ?>
