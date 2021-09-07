@@ -86,6 +86,22 @@ header
   padding:10px;
 }
 
+.nav_pres_acteur
+{
+  display:flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  width:100%;
+  font-size: 1.1em;
+  color: #181818;
+  text-decoration: none;
+}
+
+.nav_pres_acteur a:hover
+{
+    color: #760001;
+}
+
 header h1
 {
     font-family: 'latoregular';
@@ -102,13 +118,6 @@ header h2
     font-weight: bold;
 }
 
-/* Navigation */
-
-nav ul
-{
-    list-style-type: none;
-    display: flex;
-}
 
 nav li
 {
@@ -160,6 +169,7 @@ nav a:hover
 h1
 {
   font-size: 2em;
+  text-align:center;
 }
 
 h2
@@ -175,9 +185,20 @@ section
 
 .presentation
 {
+  display: flex;
+  flex-direction: column;
   background-color: #ffffff;
   border: 1px solid #c3c3c3;
   box-shadow: 2px 2px 2px 2px;
+  margin: 2em;
+  padding:0.5em;
+}
+
+.titre_logo_presentation
+{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 article, aside
@@ -191,9 +212,19 @@ article
     flex: 3;
 }
 
+.logo_GBAF
+{
+    align-items: center;
+    max-width: 10em;
+    height: auto;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
 .logo
 {
-    max-width: 10%;
+    align-items: center;
+    max-width: 20em;
     height: auto;
     vertical-align: middle;
     margin-right: 8px;
@@ -209,32 +240,34 @@ article
 .section_acteurs
 {
   display: flex;
-  flex-direction : column;
-  overflow: hidden;
+  flex-direction: column;
+  padding-bottom: 1em;
 }
 
 .article_acteur
 {
   display: flex;
   flex-direction: row;
-  justify-content:space-between;
+  justify-content: flex-start;
+  align-items: baseline;
   padding-bottom: 1em;
-  border: 1px solid #c3c3c3;
+  height: auto;
+  border-bottom: 1px solid #c3c3c3;
 }
 
-.logo_titre_acteur
+.logo_titre_pres_acteur
 {
   display: flex;
   flex-direction: row;
-  justify-content:space-between;
-  padding-bottom: 1em;
-  border: 1px solid #c3c3c3;
+  align-items: flex-end;
+  padding-left: 1em;
 }
 
-.overflow
+.titre_pres_acteur
 {
-    max-width: 20em;
-    overflow:hidden;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
 }
 
 article p
@@ -273,9 +306,15 @@ article p
 
 footer
 {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    margin-top: 2em;
     display: flex;
-    background:  url('images/ico_top.png') no-repeat top center, url('images/separateur_noir.png') no-repeat top, url('images/ombre.png') repeat-x top;
-    padding-top: 25px;
+    flex-direction: row;
+    justify-content: center;
+    height: 3em;
+    background: url('images/separateur_noir.png') no-repeat top, white;
 }
 
 footer p, footer ul
@@ -288,43 +327,30 @@ footer h1
     font-size: 1.1em;
 }
 
-
-#tweet
+.mention
 {
-    width: 28%;
+  padding-left: 2em;
+  padding-right: 2em;
 }
 
-#mes_photos
+.mention a
 {
-    width: 35%;
+  color:black;
 }
 
-#mes_amis
+.mention a:link
 {
-    width: 31%;
+  text-decoration: none;
 }
 
-#mes_photos img
-{
-    border: 1px solid #181818;
-    margin-right: 2px;
+.mention a:visited {
+  text-decoration: none;
 }
 
-#listes_amis
-{
-    display: flex;
-    justify-content: space-between;
-    margin-top: 0;
+.mention a:hover {
+  text-decoration: underline;
 }
 
-#mes_amis ul
-{
-    list-style-image: url('images/ico_liensexterne.png');
-    padding-left: 2px;
-}
-
-#mes_amis a
-{
-    text-decoration: none;
-    color: #760001;
+.mention a:active {
+  text-decoration: underline;
 }

@@ -1,57 +1,83 @@
 <?php
 
-  session_start();
+session_start();
+$_SESSION['page'] = 'presentation_acteur';
 
-  include('header.php');
+include('header.php');
 
-  if(isset($_SESSION['nom'])&&isset($_SESSION['prenom'])&&isset($_GET))
+unset($_SESSION['page']);
+
+if ( isset($_SESSION['nom']) && isset($_SESSION['prenom']) && isset($_GET['acteur']) )
+{
+  $id_acteur_choisi = htmlspecialchars($_GET['acteur']);
+
+  $bdd = new PDO('mysql:host=localhost;dbname=extranet;charset=utf8', 'root', '',
+             array(PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION));
+
+  $request = $bdd->prepare('SELECT * FROM acteurs WHERE id_acteur=?');
+  $request -> execute(array($id_acteur_choisi));
+  $info = $request -> fetch();
+
+  if ( !empty($info) )
   {
-    $_GET['acteur']=htmlspecialchars($_GET['acteur']);
 
-    $bdd = new PDO('mysql:host=localhost;dbname=extranet;charset=utf8', 'root', '',
-               array(PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION));
+?>
 
-    $nom_acteurs = $bdd->query('SELECT acteur FROM acteurs');
+<section class="presentation">
 
+  <article>
 
-    //print_r($nom_acteurs->fetch()[0]);
-    echo $_GET['acteur'];
+    <div class="titre_logo_presentation">
+      <br>
+      <img src="images/<?php echo $info['acteur']; ?>.png" alt="Logo <?php echo $info['acteur']; ?>"/ class="logo"/>
+      <br>
+    </div>
 
-    if($_GET['acteur']==$nom_acteurs->fetch()[0])
-    {
-      $acteur_choisi = $bdd->prepare('SELECT * FROM acteurs WHERE acteur=?');
-      $acteur_choisi->execute(array($_GET['acteur']));
-  ?>
+    <?php echo nl2br( $info['description'] ) ; ?>
 
-  <section class="section_acteurs">
+  </article>
 
-    <article class="article_acteur">
-      <a href="presentation_acteur.php?acteur=<?php echo $acteur_choisi['acteur']?>">
-        <img src="images/<?php echo $acteur_choisi['acteur']?>.png" alt="Logo <?php echo $acteur_choisi['acteur']?>"
-             class ="logo_acteurs" />
-      </a>
-      <div>
-        <h2><?php echo $acteur_choisi['acteur']?></h2>
-        <p><?php echo $acteur_choisi['description']?></p>
-      </div>
-    </article>
-  <?php
+</section>
+<?php
   }
+
+  else
+  {
+     ?>
+
+     <div id="titre_connexion">
+
+       <h1>Cette page n'existe pas !</h1>
+       <br><br><br>
+       <h2>Vous allez être redirigé vers la page principale.</h2>
+
+     </div>
+
+ <?php
+     header('refresh:3;url=main.php');
+  }
+
+$request ->closeCursor();
+
+}
 
 else
 {
-  echo'
-  <div id="titre_connexion">
+?>
 
-    <h1>Vous devez vous connecter pour accéder à cette page</h1>
-    <br><br><br>
-    <h2>Vous allez être redirigé vers la page d\'accueil.</h2>
+<div id="titre_connexion">
 
-  </div>';
+  <h1>Vous devez être connecté pour accéder à cette page</h1>
+  <br><br><br>
+  <h2>Vous allez être redirigé vers la page d'accueil.</h2>
 
-  header('refresh:3;url=accueil.php');
-}
+</div>
+
+<?php
+
+header('refresh:3;url=index.php');
+ }
 
 include('footer.php');
 
- ?>
+?>
