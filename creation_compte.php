@@ -5,8 +5,12 @@ session_start();
 $_SESSION['page'] = 'creation';
 
 include('header.php');
+include('Admin/admin.php');
 
 unset($_SESSION['page']);
+
+$bdd = new PDO('mysql:host=localhost;dbname=extranet;charset=utf8', $login, $pwd,
+           array( PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION ));
 
 /*
 2.
@@ -24,6 +28,7 @@ if ( isset($_GET['mdp']) )
   {
 ?>
 
+<body>
     <div id="titre_connexion">
 
       <h1>Afin de réinitialiser votre mot de passe,</h1>
@@ -47,7 +52,7 @@ if ( isset($_GET['mdp']) )
         </form>
 
     </div>';
-
+</body>
 <?php
     }
 }
@@ -63,10 +68,7 @@ elseif ( isset($_POST['username']) && !isset($_POST['name']) )
 {
   $username = htmlspecialchars( $_POST['username'] );
 
-  $bdd = new PDO('mysql:host=localhost;dbname=extranet;charset=utf8', 'root', '',
-           array(PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION));
-
-  $request_infos = $bdd -> prepare('SELECT question,id_user FROM accounts WHERE username=?' );
+  $request_infos = $bdd -> prepare('SELECT question, id_user FROM accounts WHERE username=?' );
   $request_infos -> execute( array( $username ) );
   $infos_user = $request_infos -> fetch();
 
@@ -79,7 +81,7 @@ elseif ( isset($_POST['username']) && !isset($_POST['name']) )
     $request_infos -> closeCursor();
 
 ?>
-
+<body>
   <div id="titre_connexion">
 
     <h1>Veuillez répondre à votre question secrète</h1>
@@ -101,20 +103,22 @@ elseif ( isset($_POST['username']) && !isset($_POST['name']) )
       </form>
 
   </div>';
-
+</body>
 <?php
   }
 
   else
   {
 ?>
-<div id="titre_connexion">
+<body>
+  <div id="titre_connexion">
 
-  <h1>Utilisateur inconnu</h1></br>
-  <h2>Merci de rentrer un nom d'utilisateur existant!</h2>
-  <br>
+    <h1>Utilisateur inconnu</h1></br>
+    <h2>Merci de rentrer un nom d'utilisateur existant!</h2>
+    <br>
 
-</div>
+  </div>
+</body>
 <?php
   header("refresh:3;url=creation_compte.php?mdp=oublie");
   exit();
@@ -131,9 +135,6 @@ elseif ( isset($_POST['reponse']) && !isset($_POST['name']) )
 {
   $reponse = htmlspecialchars( $_POST['reponse'] );
 
-  $bdd = new PDO('mysql:host=localhost;dbname=extranet;charset=utf8', 'root', '',
-           array(PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION));
-
   $request = $bdd -> prepare('SELECT reponse FROM accounts WHERE id_user=?' );
   $request -> execute( array( $_SESSION['id_user'] ) );
 
@@ -145,7 +146,7 @@ elseif ( isset($_POST['reponse']) && !isset($_POST['name']) )
   if ( $reponse_check )
   {
 ?>
-
+<body>
   <div id="titre_connexion">
 
     <h1>Veuillez saisir votre nouveau mot de passe</h1>
@@ -173,13 +174,14 @@ elseif ( isset($_POST['reponse']) && !isset($_POST['name']) )
       </form>
 
   </div>';
-
+</body>
 <?php
   }
 
   else
   {
 ?>
+<body>
     <div id="titre_connexion">
 
       <h1>Réponse incorrecte !</h1></br>
@@ -187,6 +189,7 @@ elseif ( isset($_POST['reponse']) && !isset($_POST['name']) )
       <br>
 
     </div>
+</body>
 <?php
   header("refresh:10;url=creation_compte.php?mdp=oublie");
   exit();
@@ -212,22 +215,22 @@ elseif ( isset($_POST['password']) && isset($_POST['passwordbis']) )
 
   if ( $password_check )
   {
-    $bdd = new PDO('mysql:host=localhost;dbname=extranet;charset=utf8', 'root', '',
-             array(PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION));
 
-    $update_password = $bdd->prepare( 'UPDATE accounts SET password=? WHERE id_user=?' );
+    $update_password = $bdd -> prepare( 'UPDATE accounts SET password=? WHERE id_user=?' );
     $update_password -> execute( array( $hash_password, $_SESSION['id_user'] ) );
 
     $update_password ->closeCursor();
 
 ?>
+<body>
     <div id="titre_connexion">
 
       <h2>Vos modifications ont bien été prises en compte</h2>
       <br><br>
       <p>Vous allez être redirigé vers la page d'accueil</p>
 
-    </div>;
+    </div>
+</body>
 <?php
 
     header("refresh:2;url=index.php");
@@ -237,7 +240,7 @@ elseif ( isset($_POST['password']) && isset($_POST['passwordbis']) )
   else
   {
 ?>
-
+<body>
     <div id="titre_connexion">
 
       <h2>Vos modifications n'ont PAS été prises en compte!</h2>
@@ -245,6 +248,7 @@ elseif ( isset($_POST['password']) && isset($_POST['passwordbis']) )
       <p><strong>Les 2 saisies de votre nouveau mot de passe ne sont pas identiques!</strong></p>
 
     </div>
+</body>
 <?php
 
     header("refresh:3;url=creation_compte.php?mdp=oublie");
@@ -266,9 +270,6 @@ in the database and we redirect him to the welcome page.
 elseif ( isset($_POST['nom']) )
 {
 
-    $bdd = new PDO('mysql:host=localhost;dbname=extranet;charset=utf8', 'root', '',
-             array(PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION));
-
     $user_datas = array();
 
     foreach ( $_POST as $cle => $valeur )
@@ -279,7 +280,7 @@ elseif ( isset($_POST['nom']) )
     $user_datas['password'] = password_hash($user_datas['password'], PASSWORD_DEFAULT);
     $user_datas['reponse'] = password_hash($user_datas['reponse'], PASSWORD_DEFAULT);
 
-    $subscription = $bdd->prepare('INSERT INTO accounts(nom,prenom,username,password,question,reponse)
+    $subscription = $bdd -> prepare('INSERT INTO accounts(nom,prenom,username,password,question,reponse)
                    VALUES(UPPER(:nom), CONCAT(UPPER(LEFT(:prenom, 1)),SUBSTRING(LOWER(:prenom), 2)),
                     :username,:password,:question,:reponse)');
     $subscription->execute($user_datas);
@@ -287,7 +288,7 @@ elseif ( isset($_POST['nom']) )
     $subscription->closeCursor();
 
 ?>
-
+<body>
     <div id="titre_connexion">
 
       <h2>Vos informations ont bien été enregistrées.</h2>
@@ -295,7 +296,7 @@ elseif ( isset($_POST['nom']) )
       <p>Vous allez être redirigé vers la page d'accueil</p>
 
     </div>
-
+</body>
 <?php
 
     header("refresh:2;url=index.php");
@@ -316,7 +317,7 @@ informations.
 else
 {
 ?>
-
+<body>
   <div id="titre_connexion">
 
     <h1>Veuillez renseigner vos données personnelles</h1>
@@ -364,7 +365,7 @@ else
       </form>
 
   </div>
-
+</body>
 <?php
 }
 

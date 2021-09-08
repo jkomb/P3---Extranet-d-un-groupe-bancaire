@@ -39,6 +39,8 @@ header
     flex-direction: row;
     justify-content: space-between;
     align-items:stretch,center;
+    margin: 1em;
+    padding-top: 1em;
 }
 
 #titre_principal
@@ -287,6 +289,7 @@ article p
   flex-direction: row;
   justify-content: center;
   text-align: center;
+  padding-bottom: 5em;
 }
 
 .champs_connexion
@@ -302,11 +305,51 @@ article p
   font-size: 0.8em;
 }
 
+.saisie_com
+{
+  display:flex;
+  flex-direction:column;
+  width: auto;
+  align-items: flex-start;
+  margin:2em;
+  padding:1em;
+  border-bottom: 1px solid #c3c3c3;
+  border-top: 1px solid #c3c3c3;
+}
+
+textarea
+{
+  resize:vertical;
+  width: 50em;
+  min-height: 2em;
+  max-height: 10em;
+}
+
+.section_commentaires
+{
+  display:flex;
+  flex-direction:column;
+  width: 100%;
+  align-items: flex-start;
+  margin: 1em;
+}
+
+.commentaire
+{
+  display:flex;
+  flex-direction:column;
+  width: auto;
+  margin-top: 1em;
+  align-items: flex-start;
+  border-bottom: 1px solid #c3c3c3;
+}
+
+
 /* Footer */
 
 footer
 {
-    position: relative;
+    position: static;
     bottom: 0;
     width: 100%;
     margin-top: 2em;
