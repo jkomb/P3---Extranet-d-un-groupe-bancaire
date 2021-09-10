@@ -16,7 +16,7 @@ if ( isset($_SESSION['nom']) && isset($_SESSION['prenom']) && isset($_GET['acteu
 
   $id_acteur_choisi = htmlspecialchars($_GET['acteur']);
 
-  if ( isset($_POST['post']) && $_SERVER['REQUEST_METHOD'] == 'POST' )
+  if ( isset($_POST['post']) && !empty($_POST['post']) && $_SERVER['REQUEST_METHOD'] == 'POST' )
   {
     $post = htmlspecialchars( $_POST['post'] );
 

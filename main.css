@@ -294,10 +294,11 @@ article p
 
 .champs_connexion
 {
-  display:flex;
+  display: flex;
   flex-direction: column;
+  justify-content: flex-start;
   padding: 4px;
-  width : 20em;
+  width: 20em;
 }
 
 #pwd_forgotten
