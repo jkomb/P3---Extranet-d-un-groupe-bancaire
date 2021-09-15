@@ -2,3 +2,6 @@ AuthName "Administration du site GBAF"
 AuthType Basic
 AuthUserFile "C:\wamp64\www\P3-Extranet groupe bancaire\Admin\.htpsswd"
 Require valid-user
+
+SetEnv HTTP_DATABASE_USER "root"
+SetEnv HTTP_DATABASE_PWD ""

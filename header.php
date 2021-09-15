@@ -21,14 +21,49 @@
 
 <?php
 
-/*
-  Affichage de la navigation dans la page d'accueil pour créer
-  un nouveau compte.
+if ( isset($_SESSION['page']) )
+{
+  if ( $_SESSION['page'] === 'index' )
+  {
+    $_SESSION['header'] = 'creation';
+  }
 
-  Diplay of navigation menu in the welcome page to createa new account.
-*/
+  if ( $_SESSION['page'] === 'creation' )
+  {
+    $_SESSION['header'] = 'retour_accueil';
+  }
 
-if ( isset($_SESSION['page']) && $_SESSION['page'] === 'index' )
+  if ( $_SESSION['page'] === 'index' )
+  {
+    $_SESSION['header'] = 'creation';
+  }
+
+  if ( $_SESSION['page'] === 'modification' )
+  {
+    if ( isset($_SESSION['nom']) && isset($_SESSION['prenom']) )
+    {
+      $_SESSION['header'] = 'modification';
+    }
+  }
+
+  if ( $_SESSION['page'] === 'presentation_acteur' )
+  {
+    if ( isset($_SESSION['nom']) && isset($_SESSION['prenom']) )
+    {
+        $_SESSION['header'] = 'acteur';
+    }
+  }
+
+}
+
+else
+{
+  $_SESSION['header'] = 'connecte';
+}
+
+//Affichage de la page
+
+if ( $_SESSION['header'] === 'creation' )
 {
 ?>
   <div id="connexion_head">
@@ -36,86 +71,47 @@ if ( isset($_SESSION['page']) && $_SESSION['page'] === 'index' )
     <p>cliquez <a href=creation_compte.php><strong>ICI</strong></a></p>
     <p>pour créer votre compte.</p>
   </div>
-
 <?php
 }
 
-elseif ( isset($_SESSION['page']) && $_SESSION['page'] === 'creation' )
+if ( $_SESSION['header'] === 'retour_accueil' )
 {
 ?>
-
   <div id="creation_head">
     <p>Retourner à l'<a href=index.php><strong>ACCUEIL</strong></a></p>
   </div>
-
 <?php
 }
 
-elseif ( isset($_SESSION['nom']) && isset($_SESSION['prenom']) )
+if ( $_SESSION['header'] === 'modification' )
 {
-
-
-  if( isset($_SESSION['page']) && $_SESSION['page'] === 'modification' )
-  {
 ?>
-
-    <div id="navigation">
-
-        <div>
-          <a href="index.php?log=off"<button>Se Déconnecter</button></a></br>
-        </div>
-
-        <div>
-          Vous êtes connecté en tant que <?php echo $_SESSION['prenom'];?>
-          <strong> <?php echo $_SESSION['nom'];?></strong>
-        </div>
-
-          <div class = "nav_pres_acteur">
-            <a href="main.php">Page principale</a>
-          </div>
-
-    </div>
-
-<?php
-  }
-
-  elseif( isset($_SESSION['page']) && $_SESSION['page'] === 'presentation_acteur' )
-  {
-?>
-
-    <div id="navigation">
-
-        <div>
-          <a href="index.php?log=off"<button>Se Déconnecter</button></a></br>
-        </div>
-
-        <div>
-          Vous êtes connecté en tant que <?php echo $_SESSION['prenom'];?>
-          <strong> <?php echo $_SESSION['nom'];?></strong>
-        </div>
-
-        <div class = "nav_pres_acteur">
-          <div class = "nav_pres_acteur">
-            <a href="main.php">Page principale</a>
-          </div>
-          <div class = "nav_pres_acteur">
-            <a href="my_account.php">Mon Compte</a>
-          </div>
-        </div>
-
-    </div>
-
-<?php
-  }
-
-  else
-  {
-?>
-
   <div id="navigation">
 
       <div>
-        <a href="index.php?log=off"<button>Se Déconnecter</button></a></br>
+        <a href="deconnexion.php"<button>Se Déconnecter</button></a></br>
+      </div>
+
+      <div>
+        Vous êtes connecté en tant que <?php echo $_SESSION['prenom'];?>
+        <strong> <?php echo $_SESSION['nom'];?></strong>
+      </div>
+
+        <div class = "nav_pres_acteur">
+          <a href="main.php">Page principale</a>
+        </div>
+
+  </div>
+<?php
+}
+
+if ( $_SESSION['header'] === 'acteur' )
+{
+?>
+  <div id="navigation">
+
+      <div>
+        <a href="deconnexion.php"<button>Se Déconnecter</button></a></br>
       </div>
 
       <div>
@@ -124,14 +120,39 @@ elseif ( isset($_SESSION['nom']) && isset($_SESSION['prenom']) )
       </div>
 
       <div class = "nav_pres_acteur">
-        <a href="my_account.php">Mon Compte</a>
+        <div class = "nav_pres_acteur">
+          <a href="main.php">Page principale</a>
+        </div>
+        <div class = "nav_pres_acteur">
+          <a href="my_account.php">Mon Compte</a>
+        </div>
       </div>
 
   </div>
-
 <?php
-  }
+}
+
+if ( $_SESSION['header'] === 'connecte' )
+{
+  unset( $_SESSION['header'] );
+?>
+  <div id="navigation">
+    
+    <div>
+      <a href="deconnexion.php"<button>Se Déconnecter</button></a></br>
+    </div>
+
+    <div>
+      Vous êtes connecté en tant que <?php echo $_SESSION['prenom'];?>
+      <strong> <?php echo $_SESSION['nom'];?></strong>
+    </div>
+
+    <div class = "nav_pres_acteur">
+      <a href="my_account.php">Mon Compte</a>
+    </div>
+
+  </div>
+<?php
 }
 ?>
-
 </header>
