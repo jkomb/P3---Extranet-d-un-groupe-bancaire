@@ -37,6 +37,7 @@ if( isConnected() === true )
               <li>Société Générale</li>
               <li>La Banque Postale</br></li>
           </ul>
+          <strong><?php echo $_SESSION['avatar']; ?></strong>
           Même s’il existe une forte concurrence entre ces entités, elles vont toutes
           travailler de la même façon pour gérer près de 80 millions de comptes sur
           territoire national.</br></br>

@@ -342,7 +342,7 @@ textarea
   width: auto;
   margin-top: 1em;
   align-items: flex-start;
-  border-bottom: 1px solid #c3c3c3;
+  border: 1px solid #c3c3c3;
 }
 
 
@@ -358,7 +358,7 @@ footer
     flex-direction: row;
     justify-content: center;
     height: 3em;
-    background: url('images/separateur_noir.png') no-repeat top, white;
+    background: url('images/separateur_noir.png') no-repeat top;
 }
 
 footer p, footer ul

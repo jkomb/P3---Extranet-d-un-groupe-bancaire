@@ -33,6 +33,21 @@ if( isConnected() === true )
     $user_entree['question'] = htmlspecialchars( $_POST['question'] );
     $user_entree['reponse'] = htmlspecialchars( $_POST['reponse'] );
 
+    if ( isset($_FILES['file']) && $_FILES['file']['error'] === 0 && is_uploaded_file( $_FILES['file']['tmp_name'] ) )
+    {
+      if ( $_FILES['file']['size'] <= $max_file_size )
+      {
+        $infosfichier = pathinfo($_FILES['file']['name']);
+        $extension_upload = $infosfichier['extension'];
+        $extensions_autorisees = array('jpg', 'jpeg', 'png');
+        if ( in_array($extension_upload, $extensions_autorisees) )
+        {
+          move_uploaded_file($_FILES['file']['tmp_name'], 'uploads/'.$avatar_name);
+          $user_entree['avatar'] = 1;
+        }
+      }
+    }
+
     $sql_request = 'UPDATE accounts SET ';
 
     foreach ( $user_entree as $cle => $valeur )
@@ -72,25 +87,11 @@ if( isConnected() === true )
     //var_dump($user_data);
 
 
-    $modification = $bdd -> prepare($sql_request);
+    $modification = $bdd -> prepare( $sql_request );
     $modification -> execute( $user_data );
 
-
-    if ( isset($_FILES['file']) && $_FILES['file']['error'] === 0 )
-    {
-      if ( $_FILES['file']['size'] <= $max_file_size )
-      {
-        $infosfichier = pathinfo($_FILES['file']['name']);
-        $extension_upload = $infosfichier['extension'];
-        $extensions_autorisees = array('jpg', 'jpeg', 'png');
-        if (in_array($extension_upload, $extensions_autorisees))
-        {
-          move_uploaded_file($_FILES['file']['tmp_name'], 'uploads/'.$avatar_name);
-        }
-      }
-    }
-
     $modification -> closeCursor();
+    $user_entree = array();
     $user_data = array();
 
     $my_account = 'modifie';
@@ -122,40 +123,40 @@ if ( $my_account  === 'infos' )
 
         <div class="champs_connexion">
             <label><strong>Nom</strong></label>
-            <input type=text name=nom
+            <input type="text" name="nom"
             placeholder="<?php echo $infos_user['nom']; ?>"/>
         </div>
 
         <div class="champs_connexion">
           <label><strong>Prénom</strong></label>
-          <input type=text name=prenom
+          <input type="text" name="prenom"
           placeholder="<?php echo $infos_user['prenom']; ?>"/>
         </div>
 
         <div class="champs_connexion">
           <label><strong>Nom d'utilisateur</strong></label>
-          <input type=text name=username
+          <input type="text" name="username"
           placeholder="<?php echo $infos_user['username']; ?>"/>
         </div>
 
         <div class="champs_connexion">
           <label><strong>Mot de passe</strong></label>
-          <input type=password name=password />
+          <input type="password" name="password" />
         </div>
 
         <div class="champs_connexion">
           <label><strong>Question secrète</strong></label>
-          <input type=text name=question
+          <input type="text" name="question"
           placeholder="<?php echo $infos_user['question']; ?>"/>
         </div>
 
         <div class="champs_connexion">
           <label><strong>Réponse à la réponse secrète</strong></label>
-          <input type=password name=reponse />
+          <input type="password" name="reponse" />
         </div>
 
         <div class="champs_connexion">
-          <input type=submit placeholder="Valider"/>
+          <input type="submit" placeholder="Valider"/>
         </div>
 
       </form>

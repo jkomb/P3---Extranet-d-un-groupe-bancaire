@@ -1,4 +1,4 @@
-<?php include_once('functions.php'); ?>
+<!DOCTYPE html>
 
 <head>
 
@@ -40,6 +40,7 @@ if ( isConnected() === false )
 
 if ( isConnected() === true )
 {
+  $avatar_name = "user_photo_".strval($_SESSION['id_user']);
   if ( isset($page) )
   {
     switch ($page)
@@ -93,6 +94,9 @@ if ( $affichage_header === 'modification' )
 
       <div>
         <a href="deconnexion.php"<button>Se Déconnecter</button></a></br>
+        <?php if($_SESSION['avatar'] ===1):?>
+          <img src=<?php echo $avatar_name;?> alt="user_avatar" />
+        <?php endif;?>
       </div>
 
       <div>
@@ -115,6 +119,9 @@ if ( $affichage_header === 'acteur' )
 
       <div>
         <a href="deconnexion.php"<button>Se Déconnecter</button></a></br>
+        <?php if($_SESSION['avatar'] ===1):?>
+          <img src=<?php echo $avatar_name;?> alt="user_avatar" />
+        <?php endif;?>
       </div>
 
       <div>
@@ -143,6 +150,9 @@ if ( $affichage_header === 'principale' )
 
     <div>
       <a href="deconnexion.php"<button>Se Déconnecter</button></a></br>
+      <?php if( $_SESSION['avatar'] === 1): ?>
+        <img src=uploads/<?php echo $avatar_name;?> alt="user_avatar" />
+      <?php endif; ?>
     </div>
 
     <div>

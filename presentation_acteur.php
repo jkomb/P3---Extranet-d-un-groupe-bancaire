@@ -17,7 +17,7 @@ if ( isConnected() === true )
   {
     $id_acteur_choisi = htmlspecialchars($_GET['acteur']);
 
-    if ( isset($_POST['post']) && !empty($_POST['post']) && $_SESSION['post'] )
+    if ( isset($_POST['post']) && !empty($_POST['post']) )
     {
       $post = htmlspecialchars( $_POST['post'] );
 
@@ -32,7 +32,8 @@ if ( isConnected() === true )
 
       $inscription_com -> closeCursor();
 
-      $_SESSION['post'] = false;
+      header('Location: presentation_acteur.php?acteur='.$id_acteur_choisi);
+      exit;
     }
 
     $request = $bdd -> prepare('SELECT acteur, description FROM acteurs WHERE id_acteur=:id_acteur LIMIT 0,1');
@@ -43,7 +44,7 @@ if ( isConnected() === true )
     {
       $exists_actor= true;
       $sql_request = <<<SQL
-      SELECT accounts.username username, posts.post commentaire, posts.date_add date_com
+      SELECT accounts.username username, posts.post commentaire, posts.date_add date_com, posts.id_post
         FROM posts
           INNER JOIN accounts
             ON accounts.id_user = posts.id_user
@@ -51,7 +52,7 @@ if ( isConnected() === true )
                 ORDER BY date_com
                   DESC LIMIT 0, 5
       SQL;
-      $table_posts = $bdd -> prepare($sql_request);
+      $table_posts = $bdd -> prepare( $sql_request );
       $table_posts -> execute( array( 'id_acteur' => $id_acteur_choisi ) );
     }
 
@@ -59,13 +60,7 @@ if ( isConnected() === true )
     {
       $exists_actor = false;
     }
-
   }
-}
-
-else
-{
-  $_SESSION['connexion'] = false;
 }
 
 //Affichage de la page
@@ -85,7 +80,7 @@ if ( $exists_actor === true )
           <br>
         </div>
 
-        <?php echo nl2br( $info['description'] ) ; ?>
+        <?php echo nl2br( $info['description'] ); ?>
 
       </article>
 
@@ -111,28 +106,53 @@ if ( $exists_actor === true )
 
   <section class="section_commentaires">
 <?php
-  while ( !empty( ( $posts = $table_posts -> fetch() ) ) )
+  if ( $_SESSION['admin'] === 1 )
   {
 ?>
-    <article class="commentaire">
+  <form method='POST' action='presentation_acteur.php'>
+<?php
+    while ( !empty( ( $posts = $table_posts -> fetch() ) ) )
+    {
+?>
+      <article class="commentaire">
 
-      <div>
-        <h4><?php echo $posts['username']; ?></h4>
-        <p><?php echo $posts['date_com']; ?></p>
-      </div>
-      <br>
-      <div>
-        <h4><?php echo $posts['commentaire']; ?></h4>
-      </div>
+        <div>
+          <h4><?php echo $posts['username'];?></h4>
+          <p><?php echo $posts['date_com']; ?></p>
+          <h4><?php echo $posts['commentaire']; ?></h4>
+        </div>
+        <div>
+          <input type='checkbox' name='delete[]' value=<?php echo $posts['id_post']; ?>/>
+        </div>
 
-    </article>
+      </article>
+<?php
+    }
+?>
+  </form>
 <?php
   }
+
+  else
+  {
+    while ( !empty( ( $posts = $table_posts -> fetch() ) ) )
+    {
+?>
+      <article class="commentaire">
+
+          <h4><?php echo $posts['username'];?></h4>
+          <p><?php echo $posts['date_com']; ?></p>
+          <h4><?php echo $posts['commentaire']; ?></h4>
+
+      </article>
+<?php
+    }
 ?>
   </section>
 
 </body>
 <?php
+  }
 }
 
 else
