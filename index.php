@@ -1,10 +1,12 @@
 <?php
 
+include_once('functions.php');
+
 session_start();
 
-$_SESSION['page'] = 'index';
+redirectMainIfConnected();
 
-include('functions.php');
+$page = 'index';
 
 if ( isset($_POST['username']) && isset($_POST['password']) )
 {
@@ -14,64 +16,61 @@ if ( isset($_POST['username']) && isset($_POST['password']) )
 
   $bdd = connexionBDD();
 
-  $request_infos = $bdd -> prepare('SELECT nom, prenom, password,id_user FROM accounts WHERE username=:username');
+  $request_infos = $bdd -> prepare('SELECT nom, prenom, password, id_user FROM accounts WHERE username=:username');
   $request_infos -> execute( array( 'username' => $username ) );
   $infos_user = $request_infos -> fetch();
+  $request_infos -> closeCursor();
 
-  if ( !empty($infos_user) )
+  if ( empty($infos_user) )
+  {
+    $user_state = 'not_found';
+  }
+
+  else
   {
     $password_check = password_verify( $password, $infos_user['password'] );
 
     if ( $password_check )
     {
-      unset( $_SESSION['page'] );
-
       $_SESSION['prenom'] = $infos_user['prenom'];
       $_SESSION['nom'] = $infos_user['nom'];
       $_SESSION['id_user'] = $infos_user['id_user'];
 
-      $request_infos -> closeCursor();
-
       header('Location: main.php');
-      exit();
+      exit;
+    }
+
+    else
+    {
+      $user_state = 'not_found';
     }
   }
-
-  else
-  {
-    include('header.php');
-    unset( $_SESSION['page'] );
-
-    $_SESSION['user'] = 'not_found';
-  }
-
-}
-
-else
-{
-
-  if( isset($_SESSION['nom']) )
-  {
-      unset( $_SESSION['page'] );
-      include('header.php');
-
-      $_SESSION['user'] = 'connected';
-  }
-
-  else
-  {
-    include('header.php');
-    unset( $_SESSION['page'] );
-
-    $_SESSION['user'] = 'disconnected';
-  }
-
+  header('Location: index.php');
+  exit;
 }
 
 //Affichage de la page
 
-if( $_SESSION['user'] === 'disconnected' )
+if( isConnected() === false || ( isset($user_state) && $user_state === 'not_found' ) )
 {
+  if (  isset($user_state) && $user_state === 'not_found' )
+  {
+    header("Refresh:3; url=index.php");
+    include('header.php');
+?>
+    <div id="titre_connexion">
+
+      <h1>Vos identifiants ne sont pas corrects !</h1>
+      <br><br><br>
+      <h2>Vous allez être redirigé vers la page d'accueil.</h2>
+
+    </div>
+<?php
+  }
+
+else
+{
+  include('header.php');
 ?>
     <div id="titre_connexion">
 
@@ -109,44 +108,7 @@ if( $_SESSION['user'] === 'disconnected' )
     </div>
 
 <?php
-  include('footer.php');
-  exit;
-
+  }
 }
 
-if ( $_SESSION['user'] === 'not_found' )
-{
-  unset( $_SESSION['user'] );
-?>
-
-  <div id="titre_connexion">
-
-    <h1>Vos identifiants ne sont pas corrects !</h1>
-    <br><br><br>
-    <h2>Vous allez être redirigé vers la page d'accueil.</h2>
-
-  </div>
-
-<?php
-  include('footer.php');
-  exit;
-}
-
-if ( $_SESSION['user'] === 'connected' )
-{
-  unset( $_SESSION['user'] );
-?>
-
-  <div id="titre_connexion">
-
-    <h1>Page d'accueil</h1></br>
-    <h3>Vous êtes déjà connecté, vous allez être redirigé vers la page principale.</h3>
-
-  </div>
-
-<?php
-  include('footer.php');
-  sleep(3);
-  header('Location: main.php');
-  exit();
-}
+include('footer.php');

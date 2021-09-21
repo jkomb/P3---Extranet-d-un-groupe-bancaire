@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<?php include_once('functions.php'); ?>
 
 <head>
 
@@ -21,49 +21,52 @@
 
 <?php
 
-if ( isset($_SESSION['page']) )
+if ( isConnected() === false )
 {
-  if ( $_SESSION['page'] === 'index' )
+  if ( isset($page) )
   {
-    $_SESSION['header'] = 'creation';
-  }
-
-  if ( $_SESSION['page'] === 'creation' )
-  {
-    $_SESSION['header'] = 'retour_accueil';
-  }
-
-  if ( $_SESSION['page'] === 'index' )
-  {
-    $_SESSION['header'] = 'creation';
-  }
-
-  if ( $_SESSION['page'] === 'modification' )
-  {
-    if ( isset($_SESSION['nom']) && isset($_SESSION['prenom']) )
+    switch ($page)
     {
-      $_SESSION['header'] = 'modification';
+      case "index":
+      $affichage_header = 'creation';
+      break;
+
+      case "creation":
+      $affichage_header = 'retour_accueil';
+      break;
     }
   }
-
-  if ( $_SESSION['page'] === 'presentation_acteur' )
-  {
-    if ( isset($_SESSION['nom']) && isset($_SESSION['prenom']) )
-    {
-        $_SESSION['header'] = 'acteur';
-    }
-  }
-
 }
 
-else
+if ( isConnected() === true )
 {
-  $_SESSION['header'] = 'connecte';
+  if ( isset($page) )
+  {
+    switch ($page)
+    {
+      case "modification":
+      if ( isset($_SESSION['nom']) && isset($_SESSION['prenom']) )
+      {
+        $affichage_header = 'modification';
+      }
+      break;
+
+      case "presentation_acteur":
+      if ( isset($_SESSION['nom']) && isset($_SESSION['prenom']) )
+      {
+        $affichage_header = 'acteur';
+      }
+      break;
+
+      default:
+        $affichage_header = 'principale';
+    }
+  }
 }
 
 //Affichage de la page
 
-if ( $_SESSION['header'] === 'creation' )
+if ( $affichage_header === 'creation' )
 {
 ?>
   <div id="connexion_head">
@@ -74,7 +77,7 @@ if ( $_SESSION['header'] === 'creation' )
 <?php
 }
 
-if ( $_SESSION['header'] === 'retour_accueil' )
+if ( $affichage_header === 'retour_accueil' )
 {
 ?>
   <div id="creation_head">
@@ -83,7 +86,7 @@ if ( $_SESSION['header'] === 'retour_accueil' )
 <?php
 }
 
-if ( $_SESSION['header'] === 'modification' )
+if ( $affichage_header === 'modification' )
 {
 ?>
   <div id="navigation">
@@ -105,7 +108,7 @@ if ( $_SESSION['header'] === 'modification' )
 <?php
 }
 
-if ( $_SESSION['header'] === 'acteur' )
+if ( $affichage_header === 'acteur' )
 {
 ?>
   <div id="navigation">
@@ -132,12 +135,12 @@ if ( $_SESSION['header'] === 'acteur' )
 <?php
 }
 
-if ( $_SESSION['header'] === 'connecte' )
+if ( $affichage_header === 'principale' )
 {
-  unset( $_SESSION['header'] );
+  unset( $affichage_header );
 ?>
   <div id="navigation">
-    
+
     <div>
       <a href="deconnexion.php"<button>Se Déconnecter</button></a></br>
     </div>

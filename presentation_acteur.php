@@ -1,17 +1,17 @@
+<!DOCTYPE html>
 <?php
+
+include_once('functions.php');
 
 session_start();
 
-$_SESSION['page'] = 'presentation_acteur';
+redirectIndexIfNotConnected();
 
-include('header.php');
-include('functions.php');
-
-unset( $_SESSION['page'] );
+$page = 'presentation_acteur';
 
 $bdd = connexionBDD();
 
-if ( isset($_SESSION['nom']) && isset($_SESSION['prenom']) )
+if ( isConnected() === true )
 {
   if ( isset($_GET['acteur']) )
   {
@@ -41,7 +41,7 @@ if ( isset($_SESSION['nom']) && isset($_SESSION['prenom']) )
 
     if ( !empty($info) )
     {
-      $_SESSION['acteur'] = true;
+      $exists_actor= true;
       $sql_request = <<<SQL
       SELECT accounts.username username, posts.post commentaire, posts.date_add date_com
         FROM posts
@@ -57,7 +57,7 @@ if ( isset($_SESSION['nom']) && isset($_SESSION['prenom']) )
 
     else
     {
-      $_SESSION['acteur'] = false;
+      $exists_actor = false;
     }
 
   }
@@ -70,8 +70,9 @@ else
 
 //Affichage de la page
 
-if ( $_SESSION['acteur'] === true )
+if ( $exists_actor === true )
 {
+  include('header.php');
 ?>
   <body>
     <section class="presentation">
@@ -132,12 +133,13 @@ if ( $_SESSION['acteur'] === true )
 
 </body>
 <?php
-  include('footer.php');
-  exit;
 }
 
-if ( $_SESSION['acteur'] === false)
+else
 {
+  sleep(3);
+  header('Location: main.php');
+  include('header.php');
 ?>
   <body>
        <div id="titre_connexion">
@@ -149,28 +151,6 @@ if ( $_SESSION['acteur'] === false)
        </div>
   </body>
  <?php
- include('footer.php');
- sleep(3);
- header('Location:main.php');
- exit;
 }
 
-if ( $_SESSION['connexion'] === false)
-{
-?>
-<body>
-  <div id="titre_connexion">
-
-    <h1>Vous devez être connecté pour accéder à cette page</h1>
-    <br><br><br>
-    <h2>Vous allez être redirigé vers la page d'accueil.</h2>
-
-  </div>
-
-</body>
-<?php
-  include('footer.php');
-  sleep(3);
-  header('Location:index.php');
-  exit;
-}
+include('footer.php');

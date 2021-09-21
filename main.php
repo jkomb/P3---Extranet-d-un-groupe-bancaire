@@ -1,13 +1,19 @@
+<!DOCTYPE html>
 <?php
+
+include_once('functions.php');
 
 session_start();
 
-include('header.php');
-include('functions.php');
+redirectIndexIfNotConnected();
+
+$page = 'principale';
 
 $bdd = connexionBDD();
 
-if( isset($_SESSION['nom']) && isset($_SESSION['prenom']) )
+include('header.php');
+
+if( isConnected() === true )
 {
   $table_acteurs = $bdd -> query('SELECT id_acteur, acteur, description_courte FROM acteurs LIMIT 0,4');
 
@@ -75,23 +81,6 @@ if( isset($_SESSION['nom']) && isset($_SESSION['prenom']) )
   </body>
     <?php
   }
-  include('footer.php');
 }
 
-else
-{
-?>
-  <div id="titre_connexion">
-
-    <h1>Vous devez vous connecter pour accéder à cette page</h1>
-    <br><br><br>
-    <h2>Vous allez être redirigé vers la page d'accueil.</h2>
-
-  </div>
-
-<?php
-  include('footer.php');
-  sleep(3);
-  header('Location:index.php');
-  exit;
-}
+include('footer.php');

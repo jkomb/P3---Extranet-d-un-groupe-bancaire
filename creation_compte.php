@@ -1,13 +1,13 @@
+<!DOCTYPE html>
 <?php
+
+include_once('functions.php');
 
 session_start();
 
-$_SESSION['page'] = 'creation';
+redirectMainIfConnected();
 
-include('header.php');
-include('functions.php');
-
-unset($_SESSION['page']);
+$page = 'creation';
 
 $bdd = connexionBDD();
 
@@ -25,7 +25,8 @@ if ( isset($_GET['mdp']) )
 
   if( $mot_cle === 'oublie' )
   {
-    $_SESSION['account'] = 'mdp_oublie';
+    $account_state = 'mdp_oublie';
+    include('header.php');
   }
 }
 
@@ -45,20 +46,20 @@ elseif ( isset($_POST['username']) && !isset($_POST['name']) )
   $request_infos -> execute( array( 'username' => $username ) );
   $infos_user = $request_infos -> fetch();
 
-  if ( !empty($infos_user) )
+  if ( !empty( $infos_user ) )
   {
 
     $question = $infos_user['question'];
-    $_SESSION['id_user'] = $infos_user['id_user'];
+    $_SESSION['temp_id_user'] = $infos_user['id_user'];
 
     $request_infos -> closeCursor();
 
-    $_SESSION['account'] = 'question_secrete';
+    $account_state = 'question_secrete';
   }
 
   else
   {
-    $_SESSION['account'] = 'inconnu';
+    $account_state = 'inconnu';
   }
 }
 /*
@@ -73,7 +74,7 @@ elseif ( isset($_POST['reponse']) && !isset($_POST['name']) )
   $reponse = htmlspecialchars( $_POST['reponse'] );
 
   $request = $bdd -> prepare('SELECT reponse FROM accounts WHERE id_user=:id_user LIMIT 0,1' );
-  $request -> execute( array( 'id_user' => $_SESSION['id_user'] ) );
+  $request -> execute( array( 'id_user' => $_SESSION['temp_id_user'] ) );
 
   $reponse_secrete = $request -> fetch();
 
@@ -82,12 +83,12 @@ elseif ( isset($_POST['reponse']) && !isset($_POST['name']) )
 
   if ( $reponse_check )
   {
-    $_SESSION['account'] = 'bonne_reponse';
+    $account_state = 'bonne_reponse';
   }
 
   else
   {
-    $_SESSION['account'] = 'mauvaise_reponse';
+    $account_state = 'mauvaise_reponse';
   }
 }
 
@@ -106,21 +107,21 @@ elseif ( isset($_POST['password']) && isset($_POST['passwordbis']) )
   $password = htmlspecialchars( $_POST['password'] );
   $passwordbis = htmlspecialchars( $_POST['passwordbis'] );
 
-  if ( $password === $passwodbis )
+  if ( $password === $passwordbis )
   {
     $hash_password = password_hash($paswword, PASSWORD_DEFAULT);
 
     $update_password = $bdd -> prepare( 'UPDATE accounts SET password=:paswword WHERE id_user=:id_user' );
-    $update_password -> execute( array( 'password' => $hash_password, 'id_user' => $_SESSION['id_user'] ) );
+    $update_password -> execute( array( 'password' => $hash_password, 'id_user' => $_SESSION['temp_id_user'] ) );
 
     $update_password ->closeCursor();
 
-    $_SESSION['account'] = 'modifie';
+    $account_state = 'modifie';
   }
 
   else
   {
-    $_SESSION['account'] = 'non_modifie';
+    $account_state = 'non_modifie';
   }
 }
 
@@ -136,21 +137,28 @@ in the database and we redirect him to the welcome page.
 */
 elseif ( isset($_POST['nom']) )
 {
-    $user_datas['nom'] = htmlspecialchars( $_POST['nom'] );
-    $user_datas['prenom'] = htmlspecialchars( $_POST['prenom'] );
-    $user_datas['username'] = htmlspecialchars( $_POST['username'] );
-    $user_datas['password'] = password_hash( htmlspecialchars( $_POST['password'] ), PASSWORD_DEFAULT);
-    $user_datas['question'] = htmlspecialchars( $_POST['question'] );
-    $user_datas['reponse'] = password_hash( htmlspecialchars( $_POST['reponse'] ), PASSWORD_DEFAULT);
+    $user_data['nom'] = strtoupper( htmlspecialchars( $_POST['nom'] ) );
+    $user_data['prenom'] = ucfirst( strtolower( htmlspecialchars( $_POST['prenom'] ) ) );
+    $user_data['username'] = strtolower( htmlspecialchars( $_POST['username'] ) );
+    $user_data['password'] = password_hash( htmlspecialchars( $_POST['password'] ), PASSWORD_DEFAULT);
+    $user_data['question'] = htmlspecialchars( $_POST['question'] );
+    $user_data['reponse'] = password_hash( htmlspecialchars( $_POST['reponse'] ), PASSWORD_DEFAULT);
 
+    //TRAITEMENT DES CHAÎNES DE CARACTÈRES EN SQL
+    /*
     $subscription = $bdd -> prepare('INSERT INTO accounts(nom,prenom,username,password,question,reponse)
                    VALUES(UPPER(:nom), CONCAT(UPPER(LEFT(:prenom, 1)),SUBSTRING(LOWER(:prenom), 2)),
                     :username,:password,:question,:reponse)');
-    $subscription -> execute( $user_datas );
+    */
+
+    $subscription = $bdd -> prepare('INSERT INTO accounts(nom,prenom,username,password,question,reponse)
+                   VALUES( :nom, :prenom, :username, :password, :question, :reponse )' );
+
+    $subscription -> execute( $user_data );
 
     $subscription -> closeCursor();
 
-    $_SESSION['account'] = 'cree';
+    $account_state = 'cree';
 }
 
 /*
@@ -164,6 +172,7 @@ informations.
 */
 else
 {
+  include('header.php');
 ?>
   <body>
     <div id="titre_connexion">
@@ -179,49 +188,46 @@ else
 
           <div class="champs_connexion">
             <label><strong>Nom</strong></label>
-            <input type=text name=nom autofocus required/>
+            <input type="text" name="nom" autofocus required/>
           </div>
 
           <div class="champs_connexion">
             <label><strong>Prénom</strong></label>
-            <input type=text name=prenom required/>
+            <input type="text" name="prenom" required/>
           </div>
 
           <div class="champs_connexion">
             <label><strong>Nom d'utilisateur</strong></label>
-            <input type=text name=username required/>
+            <input type="text" name="username" required/>
           </div>
 
           <div class="champs_connexion">
             <label><strong>Mot de passe</strong></label>
-            <input type=password name=password required/>
+            <input type="password" name="password" required/>
           </div>
 
           <div class="champs_connexion">
             <label><strong>Question secrète</strong></label>
-            <input type=text name=question required/>
+            <input type="text" name="question" required/>
           </div>
 
           <div class="champs_connexion">
             <label><strong>Réponse à la réponse secrète</strong></label>
-            <input type=password name=reponse required/>
+            <input type="password" name="reponse" required/>
           </div>
 
           <div class="champs_connexion">
-            <input type=submit value="Valider"/>
+            <input type="submit" value="Valider"/>
           </div>
         </form>
 
     </div>
   </body>
 <?php
-  include('footer.php');
-  exit;
 }
 
-if ( $_SESSION['account'] === "mdp_oublie")
+if ( $account_state === "mdp_oublie")
 {
-  unset( $_SESSION['account'] );
 ?>
 
   <body>
@@ -239,24 +245,22 @@ if ( $_SESSION['account'] === "mdp_oublie")
 
             <div class="champs_connexion">
               <label>Merci de saisir le nom d'utilisateur défini lors de la création de votre compte</label></br>
-              <input type=text name=username autofocus required/>
+              <input type="text" name="username" autofocus required/>
             </div>
 
             <div class="champs_connexion">
-              <input type=submit value="Valider"/>
+              <input type="submit" value="Valider"/>
             </div>
           </form>
 
       </div>';
   </body>
 <?php
-  include('footer.php');
-  exit;
 }
 
-if ( $_SESSION['account'] === 'question_secrete' )
+if ( $account_state === 'question_secrete' )
 {
-  unset( $_SESSION['account'] );
+  include('header.php');
 ?>
 
   <body>
@@ -272,11 +276,11 @@ if ( $_SESSION['account'] === 'question_secrete' )
 
           <div class="champs_connexion">
             <label><strong><?php echo $question; ?></strong></label></br>
-            <input type=password name=reponse  autofocus required/>
+            <input type="password" name="reponse"  autofocus required/>
           </div>
 
           <div class="champs_connexion">
-              <input type=submit value="Valider"/>
+              <input type="submit" value="Valider"/>
           </div>
         </form>
 
@@ -284,13 +288,13 @@ if ( $_SESSION['account'] === 'question_secrete' )
   </body>
 
 <?php
-  include('footer.php');
-  exit;
 }
 
-if ( $_SESSION['user'] === 'inconnu' )
+if ( $account_state === 'inconnu' )
 {
-  unset( $_SESSION['account'] );
+  sleep(3);
+  header('Location: creation_compte.php?mdp=oublie');
+  include('header.php');
 ?>
 
   <body>
@@ -304,15 +308,11 @@ if ( $_SESSION['user'] === 'inconnu' )
   </body>
 
 <?php
-  include('footer.php');
-  sleep(3);
-  header('Location:creation_compte.php?mdp=oublie');
-  exit();
 }
 
-if ( $_SESSION['user'] === 'bonne_reponse' )
+if ( $account_state === 'bonne_reponse' )
 {
-  unset( $_SESSION['account'] );
+  include('header.php');
 ?>
 
   <body>
@@ -329,16 +329,16 @@ if ( $_SESSION['user'] === 'bonne_reponse' )
 
           <div class="champs_connexion">
             <label><strong>Nouveau mot de passe</strong></label></br>
-            <input type=password name=password autofocus required/>
+            <input type="password" name="password" autofocus required/>
           </div>
 
           <div class="champs_connexion">
             <label><strong>Veuillez saisir votre nouveau </br> mot de passe à nouveau</strong></label></br>
-            <input type=password name=passwordbis required/>
+            <input type="password" name="passwordbis" required/>
           </div>
 
           <div class="champs_connexion">
-              <input type=submit value="Valider"/>
+              <input type="submit" value="Valider"/>
           </div>
         </form>
 
@@ -346,13 +346,13 @@ if ( $_SESSION['user'] === 'bonne_reponse' )
   </body>
 
 <?php
-  include('footer.php');
-  exit;
 }
 
-if ( $_SESSION['account'] === 'mauvaise_reponse' )
+if ( $account_state === 'mauvaise_reponse' )
 {
-  unset( $_SESSION['account'] );
+  sleep(3);
+  header('Location: creation_compte.php?mdp=oublie');
+  include('header.php');
 ?>
 
   <body>
@@ -366,15 +366,13 @@ if ( $_SESSION['account'] === 'mauvaise_reponse' )
   </body>
 
 <?php
-  include('footer.php');
-  sleep(3);
-  header('Location:creation_compte.php?mdp=oublie');
-  exit();
 }
 
-if ( $_SESSION['account'] === 'modifie' )
+if ( $account_state === 'modifie' )
 {
-  unset( $_SESSION['account'] );
+  sleep(3);
+  header('Location: index.php');
+  include('header.php');
 ?>
 
   <body>
@@ -387,15 +385,13 @@ if ( $_SESSION['account'] === 'modifie' )
       </div>
   </body>
 <?php
- include('footer.php');
-  sleep(3);
-  header('Location:index.php');
-  exit();
 }
 
-if ( $_SESSION['account'] === 'non_modifie' )
+if ( $account_state === 'non_modifie' )
 {
-  unset( $_SESSION['account'] );
+  sleep(3);
+  header('Location: creation_compte.php?mdp=oublie');
+  include('header.php');
 ?>
   <body>
       <div id="titre_connexion">
@@ -407,15 +403,13 @@ if ( $_SESSION['account'] === 'non_modifie' )
       </div>
   </body>
 <?php
-  include('footer.php');
-  sleep(3);
-  header('Location:creation_compte.php?mdp=oublie');
-  exit();
 }
 
-if ( $_SESSION['account'] === 'cree' )
+if ( $account_state === 'cree' )
 {
-  unset( $_SESSION['account'] );
+  sleep(3);
+  header('Location: index.php');
+  include('header.php');
 ?>
   <body>
       <div id="titre_connexion">
@@ -427,8 +421,6 @@ if ( $_SESSION['account'] === 'cree' )
       </div>
   </body>
 <?php
-  include('footer.php');
-  sleep(3);
-  header('Location:index.php');
-  exit();
 }
+
+include('footer.php');

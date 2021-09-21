@@ -1,18 +1,19 @@
+<!DOCTYPE html>
 <?php
+
+include_once('functions.php');
 
 session_start();
 
-$_SESSION['page'] = 'modification';
-
-include('header.php');
-include('functions.php');
-
-unset($_SESSION['page']);
+$page = 'modification';
 
 $bdd = connexionBDD();
 
-if( isset($_SESSION['nom']) && isset($_SESSION['prenom']) )
+if( isConnected() === true )
 {
+  $avatar_name = "user_photo_".strval($_SESSION['id_user']);
+  $max_file_size = 8000000 ;
+  $nbr_donnees_modif = 0;
 
   if ( empty($_POST) )
   {
@@ -20,62 +21,92 @@ if( isset($_SESSION['nom']) && isset($_SESSION['prenom']) )
     $request_infos -> execute( array( 'id_user' => $_SESSION['id_user']  ) );
     $infos_user = $request_infos -> fetch();
 
-    $avatar_name = "user_photo_".strval ($_SESSION['id_user']);
-
-    $_SESSION['my_account'] = 'infos';
+    $my_account = 'infos';
   }
 
   else
   {
-    $user_datas['nom'] = htmlspecialchars( $_POST['nom'] );
-    $user_datas['prenom'] = htmlspecialchars( $_POST['prenom'] );
-    $user_datas['username'] = htmlspecialchars( $_POST['username'] );
-    $user_datas['password'] = password_hash( htmlspecialchars( $_POST['password'] ), PASSWORD_DEFAULT);
-    $user_datas['question'] = htmlspecialchars( $_POST['question'] );
-    $user_datas['reponse'] = password_hash( htmlspecialchars( $_POST['reponse'] ), PASSWORD_DEFAULT);
+    $user_entree['nom'] = htmlspecialchars( $_POST['nom'] );
+    $user_entree['prenom'] = htmlspecialchars( $_POST['prenom'] );
+    $user_entree['username'] = htmlspecialchars( $_POST['username'] );
+    $user_entree['password'] = htmlspecialchars($_POST['password'] );
+    $user_entree['question'] = htmlspecialchars( $_POST['question'] );
+    $user_entree['reponse'] = htmlspecialchars( $_POST['reponse'] );
 
-    foreach ($user_datas as $cle => $valeur )
+    $sql_request = 'UPDATE accounts SET ';
+
+    foreach ( $user_entree as $cle => $valeur )
     {
       if ( $valeur != null )
       {
-        $sql_request = sprintf('UPDATE accounts SET %s=:value WHERE id_user=:id_user', $cle);
-        $valeur = password_hash($valeur, PASSWORD_DEFAULT);
-        $modification = $bdd -> prepare($sql_request);
-        $modification -> execute( array( 'value' => $valeur, 'id_user' => $_SESSION['id_user']) );
+        if ( $cle === 'password' || $cle === 'reponse' )
+        {
+          $user_data[$cle] = password_hash( $valeur, PASSWORD_DEFAULT );
+        }
+        else
+        {
+          $user_data[$cle] = $valeur;
+        }
+        $nbr_donnees_modif ++;
       }
     }
 
-    if ( isset($_FILES[$avatar_name]) AND $_FILES[$avatar_name]['error'] === 0)
+    foreach ($user_data as $cle => $valeur )
     {
-      if ($_FILES[$avatar_name]['size'] <= 8000000)
+      if ( $nbr_donnees_modif >= 2 )
       {
-        $infosfichier = pathinfo($_FILES[$avatar_name]['name']);
+        $sql_request .= sprintf('%s= :%s, ', $cle, $cle );
+      }
+      else
+      {
+        $sql_request .= sprintf( '%s= :%s ', $cle, $cle );
+      }
+
+      $nbr_donnees_modif --;
+    }
+
+    $sql_request .= sprintf( 'WHERE id_user= :%s', $_SESSION['id_user'] );
+
+
+    //echo $sql_request;
+    //var_dump($user_data);
+
+
+    $modification = $bdd -> prepare($sql_request);
+    $modification -> execute( $user_data );
+
+
+    if ( isset($_FILES['file']) && $_FILES['file']['error'] === 0 )
+    {
+      if ( $_FILES['file']['size'] <= $max_file_size )
+      {
+        $infosfichier = pathinfo($_FILES['file']['name']);
         $extension_upload = $infosfichier['extension'];
-        $extensions_autorisees = array('jpg', 'jpeg', 'gif', 'png');
+        $extensions_autorisees = array('jpg', 'jpeg', 'png');
         if (in_array($extension_upload, $extensions_autorisees))
         {
-          move_uploaded_file($_FILES[$avatar_name]['tmp_name'], 'uploads/' . basename($_FILES[$avatar_name]['name']));
+          move_uploaded_file($_FILES['file']['tmp_name'], 'uploads/'.$avatar_name);
         }
       }
     }
 
     $modification -> closeCursor();
-    $user_datas = array();
+    $user_data = array();
 
-    $_SESSION['my_account'] = 'modifie';
+    $my_account = 'modifie';
   }
 }
 
 else
 {
-  $_SESSION['my_account'] = 'deconnecte';
+  $my_account  = 'deconnecte';
 }
 
 //Affichage de la page
 
-if ( $_SESSION['my_account'] === 'infos' )
+if ( $my_account  === 'infos' )
 {
-  unset( $_SESSION['my_account'] );
+  include('header.php');
 ?>
 <body>
 
@@ -132,7 +163,7 @@ if ( $_SESSION['my_account'] === 'infos' )
       <form action="my_account.php" method="post" enctype="multipart/form-data">
         <div class="champs_connexion">
             <label><strong>Insérer votre avatar :</strong></label><br/>
-            <input type="file" name=<?php echo $avatar_name; ?>/><br/>
+            <input type="file" name=file/><br/>
             <input type="submit" value="Uploader" />
         </div>
     </form>
@@ -141,43 +172,22 @@ if ( $_SESSION['my_account'] === 'infos' )
 
 </body>
 <?php
-  include('footer.php');
-  exit;
 }
 
-if ( $_SESSION['my_account'] === 'modifie' )
+if ( $my_account  === 'modifie' )
 {
+  sleep(3);
+  header('Location: my_account.php');
+  include('header.php');
 ?>
   <body>
         <div id="titre_connexion">
-
           <h2>Vos informations ont bien été enregistrées.</h2>
-
         </div>
   </body>
 <?php
-  include('footer.php');
-  sleep(3);
-  header('Location:my_account.php');
-  exit();
 }
 
-if ( $_SESSION['my_account'] === 'deconnecte' )
-{
-  unset( $_SESSION['my_account'] );
-?>
-  <body>
-    <div id="titre_connexion">
+redirectIndexIfNotConnected();
 
-      <h1>Vous devez vous connecter pour accéder à cette page</h1>
-      <br><br><br>
-      <h2>Vous allez être redirigé vers la page d'accueil.</h2>
-
-    </div>
-  </body>
-<?php
-  include('footer.php');
-  sleep(3);
-  header('Location:index.php');
-  exit();
-}
+include('footer.php');
