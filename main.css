@@ -312,7 +312,9 @@ article p
   flex-direction:column;
   width: auto;
   align-items: flex-start;
-  margin:2em;
+  margin-left: 2em;
+  margin-right: 2em;
+  margin-bottom: 1em;
   padding:1em;
   border-bottom: 1px solid #c3c3c3;
   border-top: 1px solid #c3c3c3;
@@ -332,7 +334,9 @@ textarea
   flex-direction:column;
   width: 100%;
   align-items: flex-start;
-  margin: 1em;
+  margin-left: 2em;
+  margin-right: 2em;
+  margin-top: 0em;
 }
 
 .commentaire

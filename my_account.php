@@ -44,12 +44,15 @@ if( isConnected() === true )
         {
           move_uploaded_file($_FILES['file']['tmp_name'], 'uploads/'.$avatar_name);
           $user_entree['avatar'] = 1;
+          $_SESSION['avatar'] = 1;
         }
       }
     }
 
     $sql_request = 'UPDATE accounts SET ';
 
+    // on compte le nombre de données à mettre à jour, et on hash le mot de passe
+    // et la reponse à la question secrète
     foreach ( $user_entree as $cle => $valeur )
     {
       if ( $valeur != null )
@@ -66,6 +69,8 @@ if( isConnected() === true )
       }
     }
 
+    //on crée la requête SQL nécessaire à la mise à jour des données modifiées
+    // par l'utilisateur
     foreach ($user_data as $cle => $valeur )
     {
       if ( $nbr_donnees_modif >= 2 )
@@ -80,12 +85,12 @@ if( isConnected() === true )
       $nbr_donnees_modif --;
     }
 
-    $sql_request .= sprintf( 'WHERE id_user= :%s', $_SESSION['id_user'] );
+    $user_data['id_user'] = $_SESSION['id_user'];
+    $sql_request .= 'WHERE id_user= :id_user';
 
 
     //echo $sql_request;
     //var_dump($user_data);
-
 
     $modification = $bdd -> prepare( $sql_request );
     $modification -> execute( $user_data );

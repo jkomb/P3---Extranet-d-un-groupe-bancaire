@@ -114,21 +114,22 @@ if ( $exists_actor === true )
     while ( !empty( ( $posts = $table_posts -> fetch() ) ) )
     {
 ?>
-      <article class="commentaire">
+      <div class="commentaire">
 
         <div>
           <h4><?php echo $posts['username'];?></h4>
           <p><?php echo $posts['date_com']; ?></p>
-          <h4><?php echo $posts['commentaire']; ?></h4>
+          <h5><?php echo $posts['commentaire']; ?></h5>
         </div>
         <div>
           <input type='checkbox' name='delete[]' value=<?php echo $posts['id_post']; ?>/>
         </div>
 
-      </article>
+      </div>
 <?php
     }
 ?>
+      <input type="submit" value="Valider">
   </form>
 <?php
   }
@@ -157,20 +158,7 @@ if ( $exists_actor === true )
 
 else
 {
-  sleep(3);
-  header('Location: main.php');
-  include('header.php');
-?>
-  <body>
-       <div id="titre_connexion">
-
-         <h1>Cette page n'existe pas !</h1>
-         <br><br><br>
-         <h2>Vous allez être redirigé vers la page principale.</h2>
-
-       </div>
-  </body>
- <?php
+  redirectMainIfConnected();
 }
 
 include('footer.php');

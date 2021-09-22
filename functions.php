@@ -43,16 +43,16 @@ function redirectIndexIfNotConnected()
     sleep(3);
     header('Location: main.php');
     include('header.php');
-  ?>
+  }
+}
 
-  <body>
-    <div id="titre_connexion">
-      <h1>Vous devez vous connecter pour accéder à cette page</h1>
-      <br><br><br>
-      <h2>Vous allez être redirigé vers la page d'accueil.</h2>
-    </div>
-  </body>
-
-  <?php
+function displayAvatar( $avatar, $id_user )
+{
+  if( $avatar === 1 )
+  {
+    $avatar_name = "user_photo_".strval($id_user);
+?>
+    <img src="upload/<?php echo $avatar_name;?>" alt="user_avatar" />
+<?php
   }
 }
