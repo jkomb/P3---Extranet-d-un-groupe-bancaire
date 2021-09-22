@@ -122,7 +122,7 @@ if ( $exists_actor === true )
           <h5><?php echo $posts['commentaire']; ?></h5>
         </div>
         <div>
-          <input type='checkbox' name='delete[]' value=<?php echo $posts['id_post']; ?>/>
+          <input type="checkbox" name="delete[]" value=<?php echo $posts['id_post']; ?>/>
         </div>
 
       </div>
@@ -148,12 +148,11 @@ if ( $exists_actor === true )
       </article>
 <?php
     }
-?>
-  </section>
-
-</body>
-<?php
   }
+?>
+    </section>
+  </body>
+<?php
 }
 
 else

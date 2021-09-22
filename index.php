@@ -16,7 +16,7 @@ if ( isset($_POST['username']) && isset($_POST['password']) )
 
   $bdd = connexionBDD();
 
-  $request_infos = $bdd -> prepare('SELECT nom, prenom, password, id_user, avatar, admin FROM accounts WHERE username=:username');
+  $request_infos = $bdd -> prepare('SELECT nom, prenom, password, id_user, avatar, admin FROM accounts WHERE username= :username');
   $request_infos -> execute( array( 'username' => $username ) );
   $infos_user = $request_infos -> fetch();
   $request_infos -> closeCursor();
@@ -32,8 +32,8 @@ if ( isset($_POST['username']) && isset($_POST['password']) )
 
     if ( $password_check )
     {
-      $_SESSION['prenom'] = $infos_user['prenom'];
       $_SESSION['nom'] = $infos_user['nom'];
+      $_SESSION['prenom'] = $infos_user['prenom'];
       $_SESSION['id_user'] = $infos_user['id_user'];
       $_SESSION['avatar'] = $infos_user['avatar'];
       $_SESSION['admin'] = $infos_user['admin'];

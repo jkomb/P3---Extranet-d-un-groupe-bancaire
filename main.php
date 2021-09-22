@@ -37,7 +37,6 @@ if( isConnected() === true )
               <li>Société Générale</li>
               <li>La Banque Postale</br></li>
           </ul>
-          <strong><?php echo $_SESSION['avatar']; ?></strong>
           Même s’il existe une forte concurrence entre ces entités, elles vont toutes
           travailler de la même façon pour gérer près de 80 millions de comptes sur
           territoire national.</br></br>
@@ -63,12 +62,15 @@ if( isConnected() === true )
                 <img src="images/<?php echo $acteur['acteur']?>.png" alt="Logo <?php echo $acteur['acteur']?>"
                      class ="logo_acteurs" />
               </a>
+          </div>
+
           <div class="logo_titre_pres_acteur">
               <div clas="titre_pres_acteur">
                 <h2><?php echo $acteur['acteur']?></h2>
                 <?php echo $acteur['description_courte']?>
             </div>
           </div>
+
           <div class="logo_titre_pres_acteur">
               <a href="presentation_acteur.php?acteur=<?php echo $acteur['id_acteur']?>">
                 Lire la suite
@@ -78,10 +80,12 @@ if( isConnected() === true )
         </article>
 
       </section>
-    </section>
-  </body>
     <?php
   }
+?>
+    </section>
+  </body>
+<?php
 }
 
 include('footer.php');
