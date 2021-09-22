@@ -12,18 +12,12 @@ function connexionBDD()
 
 function isConnected()
 {
-  if( isset( $_SESSION ))
+  if( !isset( $_SESSION ))
   {
-    if ( array_key_exists('id_user', $_SESSION) === false )
-    {
       return false;
-    }
-
-    else
-    {
-      return true;
-    }
   }
+
+  return array_key_exists('id_user', $_SESSION);
 }
 
 function redirectMainIfConnected()
@@ -31,7 +25,7 @@ function redirectMainIfConnected()
   if ( isConnected() === true )
   {
     header('Location: main.php');
-    include('header.php');
+    exit;
   }
 }
 
@@ -39,10 +33,8 @@ function redirectIndexIfNotConnected()
 {
   if ( isConnected() === false )
   {
-    $page = 'main';
-    sleep(3);
-    header('Location: main.php');
-    include('header.php');
+    header('Location: index.php');
+    exit;
   }
 }
 

@@ -6,8 +6,8 @@ Variables d'environnement
 Il vous faut définir les 2 variables d'environnement suivante dans votre
 serveur local :
 
-SetEnv HTTP_DATABASE_USER "root"
-SetEnv HTTP_DATABASE_PWD ""
+HTTP_DATABASE_USER "root"
+HTTP_DATABASE_PWD ""
 
 Ainsi, si votre configuration locale est basée sur les Virtual Host, votre
 fichier de configuration devra contenir plus ou moins :

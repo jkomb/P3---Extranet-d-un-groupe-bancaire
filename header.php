@@ -38,7 +38,7 @@ if ( isConnected() === false )
   }
 }
 
-if ( isConnected() === true )
+else
 {
   if ( isset($page) )
   {

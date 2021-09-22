@@ -109,7 +109,7 @@ elseif ( isset($_POST['password']) && isset($_POST['passwordbis']) )
 
   if ( $password === $passwordbis )
   {
-    $hash_password = password_hash($paswword, PASSWORD_DEFAULT);
+    $hash_password = password_hash($password, PASSWORD_DEFAULT);
 
     $update_password = $bdd -> prepare( 'UPDATE accounts SET password=:paswword WHERE id_user=:id_user' );
     $update_password -> execute( array( 'password' => $hash_password, 'id_user' => $_SESSION['temp_id_user'] ) );
@@ -137,8 +137,8 @@ in the database and we redirect him to the welcome page.
 */
 elseif ( isset($_POST['nom']) )
 {
-    $user_data['nom'] = strtoupper( htmlspecialchars( $_POST['nom'] ) );
-    $user_data['prenom'] = ucfirst( strtolower( htmlspecialchars( $_POST['prenom'] ) ) );
+    $user_data['nom'] = mb_strtoupper( htmlspecialchars( $_POST['nom'] ) );
+    $user_data['prenom'] = ucfirst( mb_strtolower( htmlspecialchars( $_POST['prenom'] ) ) );
     $user_data['username'] = strtolower( htmlspecialchars( $_POST['username'] ) );
     $user_data['password'] = password_hash( htmlspecialchars( $_POST['password'] ), PASSWORD_DEFAULT);
     $user_data['question'] = htmlspecialchars( $_POST['question'] );

@@ -5,6 +5,8 @@ include_once('functions.php');
 
 session_start();
 
+redirectIndexIfNotConnected();
+
 $page = 'modification';
 
 $bdd = connexionBDD();
@@ -12,7 +14,7 @@ $bdd = connexionBDD();
 if( isConnected() === true )
 {
   $avatar_name = "user_photo_".strval($_SESSION['id_user']);
-  $max_file_size = 8000000 ;
+  $max_file_size_bytes = 8000000 ; // 8
   $nbr_donnees_modif = 0;
 
   if ( empty($_POST) )
@@ -35,7 +37,7 @@ if( isConnected() === true )
 
     if ( isset($_FILES['file']) && $_FILES['file']['error'] === 0 && is_uploaded_file( $_FILES['file']['tmp_name'] ) )
     {
-      if ( $_FILES['file']['size'] <= $max_file_size )
+      if ( $_FILES['file']['size'] <= $max_file_size_bytes )
       {
         $infosfichier = pathinfo($_FILES['file']['name']);
         $extension_upload = $infosfichier['extension'];
@@ -193,7 +195,5 @@ if ( $my_account  === 'modifie' )
   </body>
 <?php
 }
-
-redirectIndexIfNotConnected();
 
 include('footer.php');

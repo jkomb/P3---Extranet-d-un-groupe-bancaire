@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <?php
 
 include_once('functions.php');
@@ -65,7 +64,7 @@ if( isConnected() === true )
           </div>
 
           <div class="logo_titre_pres_acteur">
-              <div clas="titre_pres_acteur">
+              <div class="titre_pres_acteur">
                 <h2><?php echo $acteur['acteur']?></h2>
                 <?php echo $acteur['description_courte']?>
             </div>

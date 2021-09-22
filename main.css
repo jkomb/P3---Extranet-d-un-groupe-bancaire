@@ -262,7 +262,7 @@ article
 .logo_titre_pres_acteur
 {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: flex-start;
   padding-left: 1em;
 }
