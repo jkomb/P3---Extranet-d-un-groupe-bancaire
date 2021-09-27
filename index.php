@@ -34,9 +34,11 @@ if ( isset($_POST['username']) && isset($_POST['password']) )
     {
       $_SESSION['nom'] = $infos_user['nom'];
       $_SESSION['prenom'] = $infos_user['prenom'];
-      $_SESSION['id_user'] = $infos_user['id_user'];
-      $_SESSION['avatar'] = $infos_user['avatar'];
-      $_SESSION['admin'] = $infos_user['admin'];
+      $_SESSION['id_user'] = intval( $infos_user['id_user'] );
+      $_SESSION['avatar'] = intval( $infos_user['avatar'] );
+      $_SESSION['admin'] = intval( $infos_user['admin'] );
+      $_SESSION['username'] = $username;
+      $_SESSION['question'] = $infos_user['question'];
 
       header('Location: main.php');
       exit;
@@ -51,7 +53,10 @@ if ( isset($_POST['username']) && isset($_POST['password']) )
   exit;
 }
 
-//Affichage de la page
+/*
+Affichage de la page
+Display of the page
+*/
 
 if( isConnected() === false || ( isset($user_state) && $user_state === 'not_found' ) )
 {

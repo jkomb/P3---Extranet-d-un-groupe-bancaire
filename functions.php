@@ -40,7 +40,6 @@ function redirectIndexIfNotConnected()
   if ( isConnected() === false )
   {
     $page = 'main';
-    sleep(3);
     header('Location: main.php');
     include('header.php');
   }

@@ -21,50 +21,36 @@
 
 <?php
 
-if ( isConnected() === false )
+
+if ( isset($page) )
 {
-  if ( isset($page) )
+  switch ($page)
   {
-    switch ($page)
-    {
-      case "index":
-      $affichage_header = 'creation';
+    case "index":
+    $affichage_header = 'creation';
+    break;
+
+    case "creation":
+    $affichage_header = 'retour_accueil';
+    break;
+
+    case "modification":
+      $affichage_header = 'modification';
       break;
 
-      case "creation":
-      $affichage_header = 'retour_accueil';
+    case "presentation_acteur":
+      $affichage_header = 'acteur';
       break;
+
+    default:
+      $affichage_header = 'principale';
     }
-  }
 }
 
-if ( isConnected() === true )
-{
-  if ( isset($page) )
-  {
-    switch ($page)
-    {
-      case "modification":
-      if ( isset($_SESSION['nom']) && isset($_SESSION['prenom']) )
-      {
-        $affichage_header = 'modification';
-      }
-      break;
-
-      case "presentation_acteur":
-      if ( isset($_SESSION['nom']) && isset($_SESSION['prenom']) )
-      {
-        $affichage_header = 'acteur';
-      }
-      break;
-
-      default:
-        $affichage_header = 'principale';
-    }
-  }
-}
-
-//Affichage de la page
+/*
+Affichage de la page
+Display of the page
+*/
 
 if ( $affichage_header === 'creation' )
 {

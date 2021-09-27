@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <?php
 
 include_once('functions.php');
@@ -11,59 +10,59 @@ $page = 'presentation_acteur';
 
 $bdd = connexionBDD();
 
-if ( isConnected() === true )
+if ( isset($_GET['acteur']) )
 {
-  if ( isset($_GET['acteur']) )
+  $id_acteur_choisi = htmlspecialchars($_GET['acteur']);
+
+  if ( isset($_POST['post']) && !empty($_POST['post']) )
   {
-    $id_acteur_choisi = htmlspecialchars($_GET['acteur']);
+    $post = htmlspecialchars( $_POST['post'] );
 
-    if ( isset($_POST['post']) && !empty($_POST['post']) )
-    {
-      $post = htmlspecialchars( $_POST['post'] );
+    $inscription_com = $bdd -> prepare('INSERT INTO posts(id_user,id_acteur, post) VALUES (:id_user,:id_acteur,:post)');
+    $inscription_com -> execute(
+                                  array(
+                                        'id_user' => $_SESSION['id_user'],
+                                        'id_acteur' => $id_acteur_choisi,
+                                        'post' => $post
+                                      )
+                                );
 
-      $inscription_com = $bdd -> prepare('INSERT INTO posts(id_user,id_acteur, post) VALUES (:id_user,:id_acteur,:post)');
-      $inscription_com -> execute(
-                                    array(
-                                          'id_user' => $_SESSION['id_user'],
-                                          'id_acteur' => $id_acteur_choisi,
-                                          'post' => $post
-                                        )
-                                  );
+    $inscription_com -> closeCursor();
 
-      $inscription_com -> closeCursor();
+    header('Location: presentation_acteur.php?acteur='.$id_acteur_choisi);
+    exit;
+  }
 
-      header('Location: presentation_acteur.php?acteur='.$id_acteur_choisi);
-      exit;
-    }
+  $request = $bdd -> prepare('SELECT acteur, description FROM acteurs WHERE id_acteur=:id_acteur LIMIT 0,1');
+  $request -> execute( array( 'id_acteur' => $id_acteur_choisi ) );
+  $info = $request -> fetch();
 
-    $request = $bdd -> prepare('SELECT acteur, description FROM acteurs WHERE id_acteur=:id_acteur LIMIT 0,1');
-    $request -> execute( array( 'id_acteur' => $id_acteur_choisi ) );
-    $info = $request -> fetch();
+  if ( !empty($info) )
+  {
+    $exists_actor= true;
+    $sql_request = <<<SQL
+    SELECT accounts.username username, posts.post commentaire, posts.date_add date_com, posts.id_post
+      FROM posts
+        INNER JOIN accounts
+          ON accounts.id_user = posts.id_user
+            WHERE posts.id_acteur = :id_acteur
+              ORDER BY date_com
+                DESC LIMIT 0, 5
+    SQL;
+    $table_posts = $bdd -> prepare( $sql_request );
+    $table_posts -> execute( array( 'id_acteur' => $id_acteur_choisi ) );
+  }
 
-    if ( !empty($info) )
-    {
-      $exists_actor= true;
-      $sql_request = <<<SQL
-      SELECT accounts.username username, posts.post commentaire, posts.date_add date_com, posts.id_post
-        FROM posts
-          INNER JOIN accounts
-            ON accounts.id_user = posts.id_user
-              WHERE posts.id_acteur = :id_acteur
-                ORDER BY date_com
-                  DESC LIMIT 0, 5
-      SQL;
-      $table_posts = $bdd -> prepare( $sql_request );
-      $table_posts -> execute( array( 'id_acteur' => $id_acteur_choisi ) );
-    }
-
-    else
-    {
-      $exists_actor = false;
-    }
+  else
+  {
+    $exists_actor = false;
   }
 }
 
-//Affichage de la page
+/*
+Affichage de la page
+Display of the page
+*/
 
 if ( $exists_actor === true )
 {

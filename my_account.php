@@ -1,114 +1,103 @@
-<!DOCTYPE html>
 <?php
 
 include_once('functions.php');
 
 session_start();
 
+redirectIndexIfNotConnected();
+
 $page = 'modification';
 
 $bdd = connexionBDD();
 
-if( isConnected() === true )
+$avatar_name = "user_photo_".strval($_SESSION['id_user']);
+$max_file_size = 8000000 ;
+$nbr_donnees_modif = 0;
+
+if ( empty($_POST) )
 {
-  $avatar_name = "user_photo_".strval($_SESSION['id_user']);
-  $max_file_size = 8000000 ;
-  $nbr_donnees_modif = 0;
-
-  if ( empty($_POST) )
-  {
-    $request_infos = $bdd->prepare('SELECT nom, prenom, username, question FROM accounts WHERE id_user=:id_user LIMIT 0,1' );
-    $request_infos -> execute( array( 'id_user' => $_SESSION['id_user']  ) );
-    $infos_user = $request_infos -> fetch();
-
-    $my_account = 'infos';
-  }
-
-  else
-  {
-    $user_entree['nom'] = htmlspecialchars( $_POST['nom'] );
-    $user_entree['prenom'] = htmlspecialchars( $_POST['prenom'] );
-    $user_entree['username'] = htmlspecialchars( $_POST['username'] );
-    $user_entree['password'] = htmlspecialchars($_POST['password'] );
-    $user_entree['question'] = htmlspecialchars( $_POST['question'] );
-    $user_entree['reponse'] = htmlspecialchars( $_POST['reponse'] );
-
-    if ( isset($_FILES['file']) && $_FILES['file']['error'] === 0 && is_uploaded_file( $_FILES['file']['tmp_name'] ) )
-    {
-      if ( $_FILES['file']['size'] <= $max_file_size )
-      {
-        $infosfichier = pathinfo($_FILES['file']['name']);
-        $extension_upload = $infosfichier['extension'];
-        $extensions_autorisees = array('jpg', 'jpeg', 'png');
-        if ( in_array($extension_upload, $extensions_autorisees) )
-        {
-          move_uploaded_file($_FILES['file']['tmp_name'], 'uploads/'.$avatar_name);
-          $user_entree['avatar'] = 1;
-          $_SESSION['avatar'] = 1;
-        }
-      }
-    }
-
-    $sql_request = 'UPDATE accounts SET ';
-
-    // on compte le nombre de données à mettre à jour, et on hash le mot de passe
-    // et la reponse à la question secrète
-    foreach ( $user_entree as $cle => $valeur )
-    {
-      if ( $valeur != null )
-      {
-        if ( $cle === 'password' || $cle === 'reponse' )
-        {
-          $user_data[$cle] = password_hash( $valeur, PASSWORD_DEFAULT );
-        }
-        else
-        {
-          $user_data[$cle] = $valeur;
-        }
-        $nbr_donnees_modif ++;
-      }
-    }
-
-    //on crée la requête SQL nécessaire à la mise à jour des données modifiées
-    // par l'utilisateur
-    foreach ($user_data as $cle => $valeur )
-    {
-      if ( $nbr_donnees_modif >= 2 )
-      {
-        $sql_request .= sprintf('%s= :%s, ', $cle, $cle );
-      }
-      else
-      {
-        $sql_request .= sprintf( '%s= :%s ', $cle, $cle );
-      }
-
-      $nbr_donnees_modif --;
-    }
-
-    $user_data['id_user'] = $_SESSION['id_user'];
-    $sql_request .= 'WHERE id_user= :id_user';
-
-
-    //echo $sql_request;
-    //var_dump($user_data);
-
-    $modification = $bdd -> prepare( $sql_request );
-    $modification -> execute( $user_data );
-
-    $modification -> closeCursor();
-    $user_entree = array();
-    $user_data = array();
-
-    $my_account = 'modifie';
-  }
+  $my_account = 'infos';
 }
 
 else
 {
-  $my_account  = 'deconnecte';
+  $user_entries['nom'] = htmlspecialchars( $_POST['nom'] );
+  $user_entries['prenom'] = htmlspecialchars( $_POST['prenom'] );
+  $user_entries['username'] = htmlspecialchars( $_POST['username'] );
+  $user_entries['password'] = htmlspecialchars($_POST['password'] );
+  $user_entries['question'] = htmlspecialchars( $_POST['question'] );
+  $user_entries['reponse'] = htmlspecialchars( $_POST['reponse'] );
+
+  if ( isset($_FILES['file']) && $_FILES['file']['error'] === 0 )
+  {
+    echo __LINE__ ;
+    if ( $_FILES['file']['size'] <= $max_file_size )
+    {
+      echo __LINE__ ;
+      $infosfichier = pathinfo($_FILES['file']['name']);
+      $extension_upload = $infosfichier['extension'];
+      $extensions_autorisees = array('jpg', 'jpeg', 'png');
+      if ( in_array($extension_upload, $extensions_autorisees) )
+      {
+        echo __LINE__ ;
+        move_uploaded_file($_FILES['file']['tmp_name'], 'uploads/'.$avatar_name);
+        $user_entries['avatar'] = 1;
+        $_SESSION['avatar'] = 1;
+      }
+    }
+  }
+
+  $sql_request = 'UPDATE accounts SET ';
+  $keys = array();
+
+  $user_data = array_filter($user_entries);
+
+  foreach ( $user_data as $key => $value )
+  {
+    array_push( $keys, sprintf( '%s= :%s', $key, $key ) );
+  }
+
+  $user_data['id_user'] = $_SESSION['id_user'];
+
+  if ( array_key_exists( 'password', $user_data ) )
+  {
+    $user_data['password'] = password_hash( $user_data['password'], PASSWORD_DEFAULT );
+  }
+
+  if ( array_key_exists( 'reponse', $user_data ) )
+  {
+    $user_data['reponse'] = password_hash( $user_data['reponse'], PASSWORD_DEFAULT );
+  }
+
+  if ( array_key_exists( 'nom', $user_data ) )
+  {
+    $_SESSION['nom'] = strtoupper( htmlspecialchars( $user_data['nom'] ) );
+  }
+
+  if ( array_key_exists( 'prenom', $user_data ) )
+  {
+    $_SESSION['prenom'] = ucfirst( strtolower( htmlspecialchars( $user_data['prenom'] ) ) );
+  }
+
+  $sql_request .= implode( ",", $keys);
+  $sql_request .= ' WHERE id_user= :id_user';
+
+  $modification = $bdd -> prepare( $sql_request );
+  $modification -> execute( $user_data );
+
+  $modification -> closeCursor();
+  $user_entries = array();
+  $user_data = array();
+
+  $my_account = 'modifie';
 }
 
-//Affichage de la page
+
+/*
+Affichage de la page
+Display of the page
+*/
+
 
 if ( $my_account  === 'infos' )
 {
@@ -119,7 +108,7 @@ if ( $my_account  === 'infos' )
   <div id="titre_connexion">
     <h1>Vos informations personnelles</h1>
     <br>
-    <h3>Si vous le souhaitez,vous pouvez saisir les nouvelles informations à prendre en compte ci-dessous:</h3>
+    <h3>Si vous le souhaitez, vous pouvez saisir les nouvelles informations à prendre en compte ci-dessous:</h3>
   </div>
 
   <div id="page_connexion">
@@ -128,20 +117,17 @@ if ( $my_account  === 'infos' )
 
         <div class="champs_connexion">
             <label><strong>Nom</strong></label>
-            <input type="text" name="nom"
-            placeholder="<?php echo $infos_user['nom']; ?>"/>
+            <input type="text" name="nom"/>
         </div>
 
         <div class="champs_connexion">
           <label><strong>Prénom</strong></label>
-          <input type="text" name="prenom"
-          placeholder="<?php echo $infos_user['prenom']; ?>"/>
+          <input type="text" name="prenom"/>
         </div>
 
         <div class="champs_connexion">
           <label><strong>Nom d'utilisateur</strong></label>
-          <input type="text" name="username"
-          placeholder="<?php echo $infos_user['username']; ?>"/>
+          <input type="text" name="username"/>
         </div>
 
         <div class="champs_connexion">
@@ -151,8 +137,7 @@ if ( $my_account  === 'infos' )
 
         <div class="champs_connexion">
           <label><strong>Question secrète</strong></label>
-          <input type="text" name="question"
-          placeholder="<?php echo $infos_user['question']; ?>"/>
+          <input type="text" name="question"/>
         </div>
 
         <div class="champs_connexion">
@@ -167,12 +152,15 @@ if ( $my_account  === 'infos' )
       </form>
       <br>
       <form action="my_account.php" method="post" enctype="multipart/form-data">
+
         <div class="champs_connexion">
             <label><strong>Insérer votre avatar :</strong></label><br/>
-            <input type="file" name=file/><br/>
-            <input type="submit" value="Uploader" />
+            <input type="file" name="image"/><br/>
+            <input type="submit" value="Importer" />
         </div>
+
     </form>
+
     </div>
   </div>
 
@@ -182,8 +170,7 @@ if ( $my_account  === 'infos' )
 
 if ( $my_account  === 'modifie' )
 {
-  sleep(3);
-  header('Location: my_account.php');
+  header("Refresh:3; url=my_account.php");
   include('header.php');
 ?>
   <body>
@@ -193,7 +180,5 @@ if ( $my_account  === 'modifie' )
   </body>
 <?php
 }
-
-redirectIndexIfNotConnected();
 
 include('footer.php');

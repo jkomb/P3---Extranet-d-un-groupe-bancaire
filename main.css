@@ -11,19 +11,6 @@
 
 /* Eléments principaux de la page */
 
-body
-{
-    background: url('../images/hexagon_background.png');
-    font-family: 'latoregular';
-    color: #181818;
-}
-
-#bloc_page
-{
-    width: auto;
-    margin: auto;
-}
-
 section h1, footer h1, nav a
 {
     font-family: 'latoregular';
@@ -167,6 +154,15 @@ nav a:hover
 
 
 /* Corps */
+
+body
+{
+    background: url('../images/hexagon_background.png');
+    font-family: 'latoregular';
+    color: #181818;
+    min-height: 40em;
+}
+
 
 h1
 {
