@@ -33,8 +33,9 @@ function redirectIndexIfNotConnected()
 {
   if ( isConnected() === false )
   {
-    header('Location: index.php');
-    exit;
+    $page = 'main';
+    header('Location: main.php');
+    include('header.php');
   }
 }
 

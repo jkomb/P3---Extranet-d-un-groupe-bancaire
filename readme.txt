@@ -1,8 +1,7 @@
 INFORMATIONS IMPORTANTES A LIRE AVANT INSTALLATION EN LOCAL DU PROJET
 
 Variables d'environnement
-*
-*
+
 Il vous faut définir les 2 variables d'environnement suivante dans votre
 serveur local :
 

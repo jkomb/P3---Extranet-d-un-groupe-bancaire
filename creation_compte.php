@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <?php
 
 include_once('functions.php');
@@ -292,8 +291,7 @@ if ( $account_state === 'question_secrete' )
 
 if ( $account_state === 'inconnu' )
 {
-  sleep(3);
-  header('Location: creation_compte.php?mdp=oublie');
+  header("Refresh:3; url=creation_compte.php?mdp=oublie");
   include('header.php');
 ?>
 
@@ -350,8 +348,7 @@ if ( $account_state === 'bonne_reponse' )
 
 if ( $account_state === 'mauvaise_reponse' )
 {
-  sleep(3);
-  header('Location: creation_compte.php?mdp=oublie');
+  header("Refresh:3; url=creation_compte.php?mdp=oublie");
   include('header.php');
 ?>
 
@@ -370,8 +367,7 @@ if ( $account_state === 'mauvaise_reponse' )
 
 if ( $account_state === 'modifie' )
 {
-  sleep(3);
-  header('Location: index.php');
+  header("Refresh:3; url=index.php");
   include('header.php');
 ?>
 
@@ -389,8 +385,7 @@ if ( $account_state === 'modifie' )
 
 if ( $account_state === 'non_modifie' )
 {
-  sleep(3);
-  header('Location: creation_compte.php?mdp=oublie');
+  header("Refresh:3; url=creation_compte.php?mdp=oublie");
   include('header.php');
 ?>
   <body>
@@ -407,8 +402,7 @@ if ( $account_state === 'non_modifie' )
 
 if ( $account_state === 'cree' )
 {
-  sleep(3);
-  header('Location: index.php');
+  header("Refresh:3; url=index.php");
   include('header.php');
 ?>
   <body>
