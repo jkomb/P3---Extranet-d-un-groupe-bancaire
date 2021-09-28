@@ -396,12 +396,6 @@ if ( $account_state === 'modifie' )
   if ( isConnected() === false )
   {
     header("Refresh:3; url=index.php");
-  }
-  else
-  {
-    header("Refresh:3; url=my_account.php");
-  }
-  include('header.php');
 ?>
 
   <body>
@@ -414,6 +408,24 @@ if ( $account_state === 'modifie' )
       </div>
   </body>
 <?php
+  }
+  else
+  {
+    header("Refresh:3; url=my_account.php");
+?>
+
+  <body>
+      <div id="titre_connexion">
+
+        <h2>Vos modifications ont bien été prises en compte</h2>
+        <br><br>
+        <p>Vous allez être redirigé vers la page Mon Compte</p>
+
+      </div>
+  </body>
+<?php
+  }
+  include('header.php');
 }
 
 if ( $account_state === 'non_modifie' )

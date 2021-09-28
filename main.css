@@ -304,6 +304,17 @@ article p
   font-size: 0.8em;
 }
 
+.interaction_utilisateur
+{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: stretch, center;
+  padding:1em;
+  border-bottom: 1px solid #c3c3c3;
+  border-top: 1px solid #c3c3c3;
+}
+
 .saisie_com
 {
   display:flex;
@@ -314,8 +325,6 @@ article p
   margin-right: 2em;
   margin-bottom: 1em;
   padding:1em;
-  border-bottom: 1px solid #c3c3c3;
-  border-top: 1px solid #c3c3c3;
 }
 
 textarea
