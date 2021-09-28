@@ -4,8 +4,6 @@ include_once('functions.php');
 
 session_start();
 
-redirectMainIfConnected();
-
 $page = 'creation';
 
 $bdd = connexionBDD();
@@ -22,10 +20,23 @@ if ( isset($_GET['mdp']) )
 {
   $mot_cle = htmlspecialchars($_GET['mdp']);
 
-  if( $mot_cle === 'oublie' )
+  if ( $mot_cle === 'oublie' )
   {
-    $account_state = 'mdp_oublie';
-    include('header.php');
+    if ( isConnected() === false )
+    {
+      $account_state = 'mdp_oublie';
+
+    }
+    else
+    {
+      $question = $_SESSION['question'];
+      $account_state = 'question_secrete';
+    }
+  }
+  else
+  {
+    redirectMainIfConnected();
+    redirectIndexIfNotConnected();
   }
 }
 
@@ -72,13 +83,19 @@ elseif ( isset($_POST['reponse']) && !isset($_POST['name']) )
 {
   $reponse = htmlspecialchars( $_POST['reponse'] );
 
-  $request = $bdd -> prepare('SELECT reponse FROM accounts WHERE id_user=:id_user LIMIT 0,1' );
-  $request -> execute( array( 'id_user' => $_SESSION['temp_id_user'] ) );
+  if ( isConnected() === false )
+  {
+    $request = $bdd -> prepare('SELECT reponse FROM accounts WHERE id_user=:id_user LIMIT 0,1' );
+    $request -> execute( array( 'id_user' => $_SESSION['temp_id_user'] ) );
 
-  $reponse_secrete = $request -> fetch();
+    $reponse_secrete = $request -> fetch();
 
-  $reponse_check = password_verify( $reponse, $reponse_secrete['reponse'] );
-
+    $reponse_check = password_verify( $reponse, $reponse_secrete['reponse'] );
+  }
+  else
+  {
+    $reponse_check = password_verify( $reponse, $_SESSION['reponse'] );
+  }
 
   if ( $reponse_check )
   {
@@ -110,11 +127,18 @@ elseif ( isset($_POST['password']) && isset($_POST['passwordbis']) )
   {
     $hash_password = password_hash($password, PASSWORD_DEFAULT);
 
-    $update_password = $bdd -> prepare( 'UPDATE accounts SET password=:paswword WHERE id_user=:id_user' );
-    $update_password -> execute( array( 'password' => $hash_password, 'id_user' => $_SESSION['temp_id_user'] ) );
+    $update_password = $bdd -> prepare( 'UPDATE accounts SET password=:password WHERE id_user=:id_user' );
 
-    $update_password ->closeCursor();
+    if ( isConnected() === false )
+    {
+      $update_password -> execute( array( 'password' => $hash_password, 'id_user' => $_SESSION['temp_id_user'] ) );
+    }
+    else
+    {
+      $update_password -> execute( array( 'password' => $hash_password, 'id_user' => $_SESSION['id_user'] ) );
+    }
 
+    $update_password -> closeCursor();
     $account_state = 'modifie';
   }
 
@@ -171,6 +195,7 @@ informations.
 */
 else
 {
+  redirectMainIfConnected();
   include('header.php');
 ?>
   <body>
@@ -227,6 +252,7 @@ else
 
 if ( $account_state === "mdp_oublie")
 {
+  include('header.php');
 ?>
 
   <body>
@@ -367,7 +393,14 @@ if ( $account_state === 'mauvaise_reponse' )
 
 if ( $account_state === 'modifie' )
 {
-  header("Refresh:3; url=index.php");
+  if ( isConnected() === false )
+  {
+    header("Refresh:3; url=index.php");
+  }
+  else
+  {
+    header("Refresh:3; url=my_account.php");
+  }
   include('header.php');
 ?>
 

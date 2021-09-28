@@ -31,15 +31,22 @@ if ( isset($page) )
     break;
 
     case "creation":
-    $affichage_header = 'retour_accueil';
-    break;
+      if ( isConnected() === true )
+      {
+        $affichage_header = 'complet';
+      }
+      else
+      {
+        $affichage_header = 'retour_accueil';
+      }
+      break;
 
     case "modification":
       $affichage_header = 'modification';
       break;
 
     case "presentation_acteur":
-      $affichage_header = 'acteur';
+      $affichage_header = 'complet';
       break;
 
     default:
@@ -95,7 +102,7 @@ if ( $affichage_header === 'modification' )
 <?php
 }
 
-if ( $affichage_header === 'acteur' )
+if ( $affichage_header === 'complet' )
 {
 ?>
   <div id="navigation">

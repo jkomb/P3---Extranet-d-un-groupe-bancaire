@@ -16,7 +16,7 @@ if ( isset($_POST['username']) && isset($_POST['password']) )
 
   $bdd = connexionBDD();
 
-  $request_infos = $bdd -> prepare('SELECT nom, prenom, password, id_user, avatar, admin FROM accounts WHERE username= :username');
+  $request_infos = $bdd -> prepare('SELECT nom, prenom, password, id_user, avatar, admin, question, reponse FROM accounts WHERE username= :username');
   $request_infos -> execute( array( 'username' => $username ) );
   $infos_user = $request_infos -> fetch();
   $request_infos -> closeCursor();
@@ -39,6 +39,7 @@ if ( isset($_POST['username']) && isset($_POST['password']) )
       $_SESSION['admin'] = intval( $infos_user['admin'] );
       $_SESSION['username'] = $username;
       $_SESSION['question'] = $infos_user['question'];
+      $_SESSION['reponse'] = $infos_user['reponse'];
 
       header('Location: main.php');
       exit;

@@ -21,10 +21,9 @@ if ( empty($_POST) )
 
 else
 {
-  $user_entries['nom'] = htmlspecialchars( $_POST['nom'] );
-  $user_entries['prenom'] = htmlspecialchars( $_POST['prenom'] );
+  $user_entries['nom'] = mb_strtoupper( htmlspecialchars( $_POST['nom'] ) );
+  $user_entries['prenom'] = ucfirst( mb_strtolower( htmlspecialchars( $_POST['prenom'] ) ) );
   $user_entries['username'] = htmlspecialchars( $_POST['username'] );
-  $user_entries['password'] = htmlspecialchars($_POST['password'] );
   $user_entries['question'] = htmlspecialchars( $_POST['question'] );
   $user_entries['reponse'] = htmlspecialchars( $_POST['reponse'] );
 
@@ -113,7 +112,7 @@ if ( $my_account  === 'infos' )
 
   <div id="page_connexion">
     <div>
-    <form  method="post" action="my_account.php">
+    <form  method="post" action="my_account.php" class="champs_connexion">
 
         <div class="champs_connexion">
             <label><strong>Nom</strong></label>
@@ -132,7 +131,9 @@ if ( $my_account  === 'infos' )
 
         <div class="champs_connexion">
           <label><strong>Mot de passe</strong></label>
-          <input type="password" name="password" />
+          <div>
+            <a href="creation_compte.php?mdp=oublie" >Réinitialiser mon mot de passe</a>
+          </div>
         </div>
 
         <div class="champs_connexion">
@@ -150,7 +151,6 @@ if ( $my_account  === 'infos' )
         </div>
 
       </form>
-      <br>
       <form action="my_account.php" method="post" enctype="multipart/form-data">
 
         <div class="champs_connexion">
@@ -170,7 +170,7 @@ if ( $my_account  === 'infos' )
 
 if ( $my_account  === 'modifie' )
 {
-  header("Refresh:3; url=my_account.php");
+  header("Refresh:2; url=my_account.php");
   include('header.php');
 ?>
   <body>
