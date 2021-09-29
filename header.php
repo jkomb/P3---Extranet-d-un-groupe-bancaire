@@ -86,7 +86,7 @@ if ( $affichage_header === 'modification' )
 
       <div>
         <a href="deconnexion.php"<button>Se Déconnecter</button></a></br>
-        <?php displayAvatar( $_SESSION['avatar'], $_SESSION['id_user'] ); ?>
+        <?php displayAvatar(); ?>
       </div>
 
       <div>
@@ -109,7 +109,7 @@ if ( $affichage_header === 'complet' )
 
       <div>
         <a href="deconnexion.php"<button>Se Déconnecter</button></a></br>
-        <?php displayAvatar( $_SESSION['avatar'], $_SESSION['id_user'] ); ?>
+        <?php displayAvatar(); ?>
       </div>
 
       <div>
@@ -138,7 +138,7 @@ if ( $affichage_header === 'principale' )
 
     <div>
       <a href="deconnexion.php"<button>Se Déconnecter</button></a></br>
-      <?php displayAvatar( $_SESSION['avatar'], $_SESSION['id_user'] ); ?>
+      <?php displayAvatar(); ?>
     </div>
 
     <div>

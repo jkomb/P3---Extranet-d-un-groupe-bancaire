@@ -98,7 +98,7 @@ if ( isset($_GET['acteur']) )
     $verify_unique_post -> execute( array( 'id_acteur' => $id_acteur_choisi ) );
     $info_post = $verify_unique_post -> fetch();
 
-    //print_r($info);
+    //var_dump($info_post);
 
     if ( !in_array( $_SESSION['id_user'], $info_post ) )
     {
@@ -132,6 +132,8 @@ if ( isset($_GET['acteur']) )
     $verify_unique_vote -> execute( array( 'id_acteur' => $id_acteur_choisi ) );
     $info_vote = $verify_unique_vote -> fetch();
 
+    //var_dump($info_vote);
+
     if ( !in_array( $_SESSION['id_user'], $info_vote ) )
     {
       $affichage_like = true;
@@ -140,12 +142,14 @@ if ( isset($_GET['acteur']) )
     {
       $affichage_like = false;
     }
+
   }
 
   else
   {
     $exists_actor = false;
   }
+
 }
 
 /*
@@ -241,10 +245,6 @@ if ( $exists_actor === true )
   }
 
 ?>
-
-
-
-
   </section>
 
   <section class="section_commentaires">

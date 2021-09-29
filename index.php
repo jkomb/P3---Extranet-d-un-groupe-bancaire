@@ -35,11 +35,11 @@ if ( isset($_POST['username']) && isset($_POST['password']) )
       $_SESSION['nom'] = $infos_user['nom'];
       $_SESSION['prenom'] = $infos_user['prenom'];
       $_SESSION['id_user'] = intval( $infos_user['id_user'] );
-      $_SESSION['avatar'] = intval( $infos_user['avatar'] );
-      $_SESSION['admin'] = intval( $infos_user['admin'] );
       $_SESSION['username'] = $username;
       $_SESSION['question'] = $infos_user['question'];
       $_SESSION['reponse'] = $infos_user['reponse'];
+      $_SESSION['avatar'] = $infos_user['avatar'];
+      $_SESSION['admin'] = intval( $infos_user['admin'] );
 
       header('Location: main.php');
       exit;

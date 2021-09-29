@@ -39,13 +39,12 @@ function redirectIndexIfNotConnected()
   }
 }
 
-function displayAvatar( $avatar, $id_user )
+function displayAvatar()
 {
-  if( $avatar === 1 )
+  if( $_SESSION["avatar"] != "" )
   {
-    $avatar_name = "user_photo_".strval($id_user);
 ?>
-    <img src="upload/<?php echo $avatar_name;?>" alt="user_avatar" />
+    <img src="./uploads/<?php $_SESSION['avatar'];?>" alt="<?php $_SESSION['username'];?>_avatar" />
 <?php
   }
 }
