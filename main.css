@@ -9,9 +9,8 @@
     font-style: normal;
 }
 
-/* Eléments principaux de la page */
 
-section h1, footer h1, nav a
+*
 {
     font-family: 'latoregular';
     font-weight: normal;
@@ -149,7 +148,6 @@ nav a:hover
     padding-left: 4px;
     color: black;
     font-size: 0.9em;
-
 }
 
 
@@ -162,7 +160,6 @@ body
     color: #181818;
     min-height: 40em;
 }
-
 
 h1
 {
@@ -235,6 +232,7 @@ article
     vertical-align: center;
     margin-right: 8px;
 }
+
 .section_acteurs
 {
   display: flex;
@@ -268,11 +266,6 @@ article
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-}
-
-article p
-{
-    font-size: 0.8em;
 }
 
 #titre_connexion
@@ -356,7 +349,6 @@ textarea
   border: 1px solid #c3c3c3;
 }
 
-
 /* Footer */
 
 footer
@@ -370,11 +362,6 @@ footer
     justify-content: center;
     height: 3em;
     background: url('images/separateur_noir.png') no-repeat top;
-}
-
-footer p, footer ul
-{
-    font-size: 0.8em;
 }
 
 footer h1
