@@ -10,8 +10,7 @@ $page = 'modification';
 
 $bdd = connexionBDD();
 
-$avatar_name = "user_photo_".strval($_SESSION['id_user']);
-$max_file_size_bytes = 7000000 ;
+$max_file_size_bytes = 8000000 ;
 
 if ( empty($_POST) )
 {
@@ -28,48 +27,42 @@ else
 
   if ( !empty($_FILES['image']) )
   {
-    try
+    if ( is_uploaded_file($_FILES['image']['tmp_name'] ) === false )
     {
-      if ( is_uploaded_file($_FILES['image']['tmp_name']) === false )
-      {
-        throw new \Exception('Error on upload: Invalid file definition');
-      }
+      echo '1:Error on upload: Invalid file definition';
+      exit;
+    }
 
-      if ( $_FILES['image']['size'] > $max_file_size_bytes )
-      {
-        throw new Exception('Exceeded file size limit.');
-      }
+    if ( $_FILES['image']['size'] > $max_file_size_bytes )
+    {
+      echo '2:Exceeded file size limit.';
+      exit;
+    }
 
-      $finfo = new finfo(FILEINFO_MIME_TYPE);
-      $authorized_extensions = array(
-          'jpg' => 'image/jpeg',
-          'png' => 'image/png',
-          'gif' => 'image/gif',
-      );
-      $verify_mime_type = array_search(
-        $finfo->file($_FILES['image']['tmp_name']),
-        $authorized_extensions,
-        true
-      );
+    $file_mimetype = mime_content_type($_FILES['image']['tmp_name']);
+    $authorized_mime_types = array( 'image/jpeg', 'image/jpg', 'image/png', 'image/gif');
 
-      if ( $verify_mime_type === false )
-      {
-          throw new RuntimeException('Invalid file format.');
-      }
+    $verify_mime_type = array_search( $file_mimetype, $authorized_mime_types );
 
-      $uploadName = $_FILES['image']['name'];
-      $extension = strtolower(substr($uploadName, strripos($uploadName, '.')+1));
-      $filename = hash_file('sha256', $uploadedName) . '.' . $extension;
 
-      move_uploaded_file( $_FILES['image']['tmp_name'], './uploads/'.$filename );
+    if ( $verify_mime_type === false )
+    {
+      echo '3:Invalid file format.';
+      exit;
+    }
 
-      $user_entries['avatar'] = $filename;
-      $_SESSION['avatar'] = $filename;;
+    $uploadName = $_FILES['image']['name'];
+    $extension = strtolower(substr($uploadName, strripos($uploadName, '.')+1));
+    $filename = hash_file('sha256', $_FILES['image']['tmp_name']) . '.' . $extension;
 
-    } catch (RuntimeException $e)
-      {
-        echo $e->getMessage();
-      }
+    if ( !move_uploaded_file( $_FILES['image']['tmp_name'], './uploads/'.$filename ) )
+    {
+      echo __LINE__;
+    }
+
+    $user_entries['avatar'] = $filename;
+    $_SESSION['avatar'] = $filename;
+
   }
 
   $sql_request = 'UPDATE accounts SET ';

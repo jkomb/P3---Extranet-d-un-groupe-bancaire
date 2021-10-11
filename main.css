@@ -9,7 +9,6 @@
     font-style: normal;
 }
 
-
 *
 {
     font-family: 'latoregular';
@@ -152,12 +151,12 @@ nav a:hover
 
 /* Corps */
 
-body
+html, body
 {
     background: url('../images/hexagon_background.png');
     font-family: 'latoregular';
     color: #181818;
-    min-height: 40em;
+    min-height: 100vh;
 }
 
 h1
@@ -303,6 +302,7 @@ article
   justify-content: flex-start;
   align-items: stretch, center;
   padding:1em;
+  width: 90%;
   border-bottom: 1px solid #c3c3c3;
   border-top: 1px solid #c3c3c3;
 }

@@ -38,23 +38,45 @@ if ( isset($_GET['acteur']) )
   //Enregistrement d'un nouvel avis
   if ( isset($_POST['like']) || isset($_POST['dislike']) )
   {
+    echo __LINE__;
     if ( isset($_POST['like']) )
     {
+      echo __LINE__;
       $vote = 1;
+      $stat_vote_request = 'UPDATE stat_votes SET likes = likes + 1 WHERE id_acteur= :id_acteur';
     }
     if ( isset($_POST['dislike']) )
     {
+      echo __LINE__;
       $vote = -1;
+      $stat_vote_request = 'UPDATE stat_votes SET dislikes = dislikes + 1 WHERE id_acteur= :id_acteur';
     }
+    echo __LINE__;
     $inscription_vote = $bdd -> prepare('INSERT INTO vote(id_user,id_acteur, vote) VALUES (:id_user,:id_acteur,:vote)');
 
     $inscription_vote -> execute(
-                                  array(
-                                        'id_user' => $_SESSION['id_user'],
-                                        'id_acteur' => $id_acteur_choisi,
-                                        'vote' => $vote
-                                      )
+                                  [
+                                    'id_user' => $_SESSION['id_user'],
+                                    'id_acteur' => $id_acteur_choisi,
+                                    'vote' => $vote
+                                  ]
                                 );
+    try
+    {
+      $bdd -> beginTransaction();
+      $update_stat_votes = $bdd -> prepare($stat_vote_request);
+      $update_stat_votes -> execute ( ['id_acteur' => $id_acteur_choisi] );
+      $bdd -> commit();
+    }catch(Exception $e)
+      {
+        $pdo->rollback();
+
+        echo $e -> getMessage();
+        echo $e -> getCode();
+
+        exit();
+      }
+
 
     $inscription_vote -> closeCursor();
 
@@ -85,62 +107,35 @@ if ( isset($_GET['acteur']) )
     $table_posts -> execute( array( 'id_acteur' => $id_acteur_choisi ) );
 
     //Vérification de l'existence d'un commentaire de l'utilisateur
-    $unique_post_request = <<<SQL
-    SELECT id_user
-      FROM accounts
-        WHERE EXISTS (
-          SELECT TRUE
-            FROM posts
-              WHERE accounts.id_user = posts.id_user AND posts.id_acteur = :id_acteur)
-    SQL;
+    $exist_post = postAlreadyExists($bdd, $_SESSION['id_user'], $id_acteur_choisi);
 
-    $verify_unique_post = $bdd -> prepare( $unique_post_request );
-    $verify_unique_post -> execute( array( 'id_acteur' => $id_acteur_choisi ) );
-    $info_post = $verify_unique_post -> fetch();
-
-    //var_dump($info_post);
-
-    if ( !in_array( $_SESSION['id_user'], $info_post ) )
+    if ( !$exist_post )
     {
-      $affichage_commentaire = true;
+      $affichage_post = true;
     }
     else
     {
-      $affichage_commentaire = false;
+      $affichage_post = false;
     }
 
     //Récupération des avis dans la base de données
-    $like_request = $bdd -> prepare('SELECT COUNT(*) FROM vote WHERE id_acteur=:id_acteur AND vote=1');
-    $like_request -> execute( array( 'id_acteur' => $id_acteur_choisi ) );
-    $nombre_likes = $like_request -> fetch();
+    $votes_request = $bdd -> prepare('SELECT likes, dislikes FROM stat_votes WHERE id_acteur= :id_acteur');
+    $votes_request -> execute( ['id_acteur' => $id_acteur_choisi ] );
+    $stat_votes = $votes_request -> fetch();
 
-    $dislike_request = $bdd -> prepare('SELECT COUNT(*) FROM vote WHERE id_acteur=:id_acteur AND vote=-1');
-    $dislike_request -> execute( array( 'id_acteur' => $id_acteur_choisi ) );
-    $nombre_dislikes = $dislike_request -> fetch();
+    $number_likes = $stat_votes[0];
+    $number_dislikes = $stat_votes[1];
 
     //Vérification de l'existence d'un avis de l'utilisateur
-    $unique_vote_request = <<<SQL
-    SELECT id_user
-      FROM accounts
-        WHERE EXISTS (
-          SELECT TRUE
-            FROM vote
-              WHERE accounts.id_user = vote.id_user AND vote.id_acteur = :id_acteur)
-    SQL;
+    $exist_vote = voteAlreadyExists($bdd, $_SESSION['id_user'], $id_acteur_choisi);
 
-    $verify_unique_vote = $bdd -> prepare( $unique_vote_request );
-    $verify_unique_vote -> execute( array( 'id_acteur' => $id_acteur_choisi ) );
-    $info_vote = $verify_unique_vote -> fetch();
-
-    //var_dump($info_vote);
-
-    if ( !in_array( $_SESSION['id_user'], $info_vote ) )
+    if ( !$exist_vote )
     {
-      $affichage_like = true;
+      $affichage_vote = true;
     }
     else
     {
-      $affichage_like = false;
+      $affichage_vote = false;
     }
 
   }
@@ -181,13 +176,13 @@ if ( $exists_actor === true )
   <section class="interaction_utilisateur">
     <section class="saisie_com">
         <div>
-          <label>Likes: <strong><?php echo $nombre_likes[0];?></strong></label> /
-          <label>Dislikes: <strong><?php echo $nombre_dislikes[0];?></strong></label>
+          <label>Likes: <strong><?php echo $number_likes;?></strong></label> /
+          <label>Dislikes: <strong><?php echo $number_dislikes;?></strong></label>
         </div>
     </section>
 
 <?php
-  if ( $affichage_commentaire )
+  if ( $affichage_post )
   {
 ?>
     <div class="saisie_com">
@@ -214,13 +209,13 @@ if ( $exists_actor === true )
 ?>
   <section class="saisie_com">
       <div>
-        <label><strong>Vous avez déjà donné écrit un commentaire.</strong></label>
+        <label><strong>Vous avez déjà écrit un commentaire.</strong></label>
       </div>
   </section>
 <?php
   }
 
-  if ( $affichage_like )
+  if ( $affichage_vote )
   {
 ?>
     <div class="saisie_com">

@@ -2,7 +2,6 @@
 
 Vous trouverez ici toutes les informations utiles à l'installation du projet en local sur votre machine.
 
-
 ## INFORMATIONS IMPORTANTES A LIRE AVANT INSTALLATION EN LOCAL DU PROJET
 
 **Variables d'environnement**
@@ -12,6 +11,9 @@ serveur local :
 
 HTTP_DATABASE_USER "root"
 HTTP_DATABASE_PWD ""
+HTTP_DATABASE_LOCATION "localhost"
+HTTP_DATABASE_HOST "host"
+HTTP_DATABASE_NAME "extranet"
 
 Ainsi, si votre configuration locale est basée sur les Virtual Host, votre
 fichier de configuration devra contenir plus ou moins :
@@ -21,12 +23,18 @@ fichier de configuration devra contenir plus ou moins :
 	DocumentRoot "c:............./p3-extranet groupe bancaire"
 	SetEnv HTTP_DATABASE_USER "root"
 	SetEnv HTTP_DATABASE_PWD ""
+	SetEnv HTTP_DATABASE_LOCATION "localhost"
+	SetEnv HTTP_DATABASE_HOST "host"
+	SetEnv HTTP_DATABASE_NAME "extranet"
 	<Directory  "c:../p3-extranet groupe bancaire/">
 		Options +Indexes +Includes +FollowSymLinks +MultiViews
 		AllowOverride All
 		Require local
 	</Director*>
-</VirtualHost**> 
+</VirtualHost**>
+
+
+```SQL
 
 ## Création des tables
 
@@ -101,6 +109,3 @@ CREATE TABLE IF NOT EXISTS `vote` (
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-<!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE3NzI4MjM5MTldfQ==
--->

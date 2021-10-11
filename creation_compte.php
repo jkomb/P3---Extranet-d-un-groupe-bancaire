@@ -4,9 +4,13 @@ include_once('functions.php');
 
 session_start();
 
+redirectMainIfConnected();
+
 $page = 'creation';
 
 $bdd = connexionBDD();
+
+$account_state = "";
 
 /*
 2.
@@ -33,11 +37,6 @@ if ( isset($_GET['mdp']) )
       $account_state = 'question_secrete';
     }
   }
-  else
-  {
-    redirectMainIfConnected();
-    redirectIndexIfNotConnected();
-  }
 }
 
 /*
@@ -48,7 +47,7 @@ On demande ensuite à ce qu'il réponde à sa question secrète.
 We then ask him to answer his secret question.
 */
 
-elseif ( isset($_POST['username']) && !isset($_POST['name']) )
+elseif ( isset($_POST['username']) && !isset($_POST['nom']) )
 {
   $username = htmlspecialchars( $_POST['username'] );
 
@@ -79,7 +78,7 @@ On demande enfin à l'utilisateur de saisir un nouveau mot de passe, 2 fois.
 
 Finally, we ask the user to type a new password, twice.
 */
-elseif ( isset($_POST['reponse']) && !isset($_POST['name']) )
+elseif ( isset($_POST['reponse']) && !isset($_POST['nom']) )
 {
   $reponse = htmlspecialchars( $_POST['reponse'] );
 
@@ -160,28 +159,36 @@ in the database and we redirect him to the welcome page.
 */
 elseif ( isset($_POST['nom']) )
 {
-    $user_data['nom'] = mb_strtoupper( htmlspecialchars( $_POST['nom'] ) );
-    $user_data['prenom'] = ucfirst( mb_strtolower( htmlspecialchars( $_POST['prenom'] ) ) );
-    $user_data['username'] = strtolower( htmlspecialchars( $_POST['username'] ) );
-    $user_data['password'] = password_hash( htmlspecialchars( $_POST['password'] ), PASSWORD_DEFAULT);
-    $user_data['question'] = htmlspecialchars( $_POST['question'] );
-    $user_data['reponse'] = password_hash( htmlspecialchars( $_POST['reponse'] ), PASSWORD_DEFAULT);
+    if ( empty($user_data['nom']) || empty($user_data['prenom']) || empty($user_data['username']) || empty($user_data['password'])
+        || empty($user_data['question']) || empty($user_data['reponse']) )
+    {
+      $account_state = 'vide';
+    }
+    else
+    {
+      $user_data['nom'] = mb_strtoupper( htmlspecialchars( $_POST['nom'] ) );
+      $user_data['prenom'] = ucfirst( mb_strtolower( htmlspecialchars( $_POST['prenom'] ) ) );
+      $user_data['username'] = strtolower( htmlspecialchars( $_POST['username'] ) );
+      $user_data['password'] = password_hash( htmlspecialchars( $_POST['password'] ), PASSWORD_DEFAULT);
+      $user_data['question'] = htmlspecialchars( $_POST['question'] );
+      $user_data['reponse'] = password_hash( htmlspecialchars( $_POST['reponse'] ), PASSWORD_DEFAULT);
 
-    //TRAITEMENT DES CHAÎNES DE CARACTÈRES EN SQL
-    /*
-    $subscription = $bdd -> prepare('INSERT INTO accounts(nom,prenom,username,password,question,reponse)
-                   VALUES(UPPER(:nom), CONCAT(UPPER(LEFT(:prenom, 1)),SUBSTRING(LOWER(:prenom), 2)),
-                    :username,:password,:question,:reponse)');
-    */
+      //TRAITEMENT DES CHAÎNES DE CARACTÈRES EN SQL
+      /*
+      $subscription = $bdd -> prepare('INSERT INTO accounts(nom,prenom,username,password,question,reponse)
+                     VALUES(UPPER(:nom), CONCAT(UPPER(LEFT(:prenom, 1)),SUBSTRING(LOWER(:prenom), 2)),
+                      :username,:password,:question,:reponse)');
+      */
 
-    $subscription = $bdd -> prepare('INSERT INTO accounts(nom,prenom,username,password,question,reponse)
-                   VALUES( :nom, :prenom, :username, :password, :question, :reponse )' );
+      $subscription = $bdd -> prepare('INSERT INTO accounts(nom,prenom,username,password,question,reponse)
+                     VALUES( :nom, :prenom, :username, :password, :question, :reponse )' );
 
-    $subscription -> execute( $user_data );
+      $subscription -> execute( $user_data );
 
-    $subscription -> closeCursor();
+      $subscription -> closeCursor();
 
-    $account_state = 'cree';
+      $account_state = 'cree';
+    }
 }
 
 /*
@@ -250,7 +257,7 @@ else
 <?php
 }
 
-if ( $account_state === "mdp_oublie")
+if ( $account_state === "mdp_oublie" )
 {
   include('header.php');
 ?>
@@ -456,6 +463,23 @@ if ( $account_state === 'cree' )
         <h2>Vos informations ont bien été enregistrées.</h2>
         <br><br>
         <p>Vous allez être redirigé vers la page d'accueil</p>
+
+      </div>
+  </body>
+<?php
+}
+
+if ( $account_state === 'vide' )
+{
+  header("Refresh:3; url=creation_compte.php?mdp=oublie");
+  include('header.php');
+?>
+  <body>
+      <div id="titre_connexion">
+
+        <h2>Un ou plusieurs champs saisis sont vides.</h2>
+        <br><br>
+        <p>Vous allez être redirigé vers la page Mon Compte</p>
 
       </div>
   </body>
