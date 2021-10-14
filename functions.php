@@ -2,28 +2,26 @@
 
 function connexionBDD()
 {
-  // Make sure to declare those 2 environment variables in the proper directory
+
   $login = getenv('HTTP_DATABASE_USER');
   $pwd = getenv('HTTP_DATABASE_PWD');
-  $server_location = getenv('HTTP_DATABASE_LOCATION');
-  $database_host = getenv('HTTP_DATABASE_HOST');
+  $server_location = getenv('HTTP_DATABASE_HOST');
   $database_name = getenv('HTTP_DATABASE_NAME');
 
   return
-    new PDO('mysql:'.$database_host.'='.$server_location.';dbname='.$database_name.';charset=utf8', $login, $pwd,
+    new PDO('mysql:host='.$server_location.';dbname='.$database_name.';charset=utf8', $login, $pwd,
              [PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);
 }
 
 function isConnected()
 {
-  if ( isset( $_SESSION['id_user'] ) )
+  if (isset( $_SESSION['id_user']) )
   {
     return true;
+    exit;
   }
-  else
-  {
-    return false;
-  }
+
+  return array_key_exists('id_user', $_SESSION);
 }
 
 function redirectMainIfConnected()
@@ -47,10 +45,10 @@ function redirectIndexIfNotConnected()
 
 function displayAvatar()
 {
-  if( $_SESSION["avatar"] != "" )
+  if( $_SESSION['avatar'] != "" )
   {
 ?>
-    <img src="./uploads/<?php $_SESSION['avatar'];?>" alt="<?php $_SESSION['username'];?>_avatar" />
+    <img src="./uploads/<?php echo $_SESSION['avatar'];?>" alt="<?php $_SESSION['username'];?>_avatar" class ="logo_acteurs" />
 <?php
   }
 }
@@ -66,5 +64,12 @@ function voteAlreadyExists($pdo, $id_user, $id_acteur_choisi)
 {
     $request = $pdo -> prepare("SELECT 1 FROM vote WHERE id_user= :id_user AND id_acteur= :id_acteur");
     $request -> execute(['id_user' => $id_user, 'id_acteur' => $id_acteur_choisi]);
+    return (bool) $request -> fetchColumn();
+}
+
+function isAdmin($pdo, $id_user)
+{
+    $request = $pdo -> prepare("SELECT 1 FROM admin WHERE id_user= :id_user");
+    $request -> execute(['id_user' => $id_user]);
     return (bool) $request -> fetchColumn();
 }

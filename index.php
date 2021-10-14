@@ -1,6 +1,6 @@
 <?php
 
-include_once('functions.php');
+include('functions.php');
 
 session_start();
 
@@ -16,7 +16,7 @@ if ( isset($_POST['username']) && isset($_POST['password']) )
 
   $bdd = connexionBDD();
 
-  $request_infos = $bdd -> prepare('SELECT nom, prenom, password, id_user, avatar, admin, question, reponse FROM accounts WHERE username= :username');
+  $request_infos = $bdd -> prepare('SELECT nom, prenom, password, id_user, avatar, question, reponse FROM accounts WHERE username= :username');
   $request_infos -> execute( array( 'username' => $username ) );
   $infos_user = $request_infos -> fetch();
   $request_infos -> closeCursor();
@@ -36,10 +36,10 @@ if ( isset($_POST['username']) && isset($_POST['password']) )
       $_SESSION['prenom'] = $infos_user['prenom'];
       $_SESSION['id_user'] = intval( $infos_user['id_user'] );
       $_SESSION['username'] = $username;
+      $_SESSION['hash_password'] = $infos_user['password'];
       $_SESSION['question'] = $infos_user['question'];
       $_SESSION['reponse'] = $infos_user['reponse'];
       $_SESSION['avatar'] = $infos_user['avatar'];
-      $_SESSION['admin'] = intval( $infos_user['admin'] );
 
       header('Location: main.php');
       exit;
@@ -91,7 +91,7 @@ else
 
         <div class="champs_connexion">
 
-          <form  method="post" action"index.php">
+          <form  method="post" action="index.php">
 
             <div class="champs_connexion">
               <input type="text" name="username" placeholder="Nom d'utilisateur" autofocus required/>

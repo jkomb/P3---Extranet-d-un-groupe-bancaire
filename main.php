@@ -1,6 +1,6 @@
 <?php
 
-include_once('functions.php');
+include('functions.php');
 
 session_start();
 
@@ -12,7 +12,7 @@ $bdd = connexionBDD();
 
 include('header.php');
 
-$table_acteurs = $bdd -> query('SELECT id_acteur, acteur, description_courte FROM acteurs LIMIT 0,4');
+$table_acteurs = $bdd -> query('SELECT id_acteur, nom_acteur, description_courte FROM acteurs LIMIT 0,4');
 
 ?>
 <div id="banniere_image"></div>
@@ -56,14 +56,14 @@ while( !empty( $acteur = $table_acteurs -> fetch() ) )
 
         <div class="logo_titre_pres_acteur">
             <a href="presentation_acteur.php?acteur=<?php echo $acteur['id_acteur']?>">
-              <img src="images/<?php echo $acteur['acteur']?>.png" alt="Logo <?php echo $acteur['acteur']?>"
+              <img src="images/<?php echo $acteur['nom_acteur']?>.png" alt="Logo <?php echo $acteur['nom_acteur']?>"
                    class ="logo_acteurs" />
             </a>
         </div>
 
         <div class="logo_titre_pres_acteur">
             <div clas="titre_pres_acteur">
-              <h2><?php echo $acteur['acteur']?></h2>
+              <h2><?php echo $acteur['nom_acteur']?></h2>
               <?php echo $acteur['description_courte']?>
           </div>
         </div>

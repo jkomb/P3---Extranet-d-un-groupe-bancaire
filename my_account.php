@@ -1,6 +1,6 @@
 <?php
 
-include_once('functions.php');
+include('functions.php');
 
 session_start();
 
@@ -10,20 +10,13 @@ $page = 'modification';
 
 $bdd = connexionBDD();
 
+$my_account = "";
+
 $max_file_size_bytes = 8000000 ;
 
 if ( empty($_POST) )
 {
   $my_account = 'infos';
-}
-
-else
-{
-  $user_entries['nom'] = mb_strtoupper( htmlspecialchars( $_POST['nom'] ) );
-  $user_entries['prenom'] = ucfirst( mb_strtolower( htmlspecialchars( $_POST['prenom'] ) ) );
-  $user_entries['username'] = htmlspecialchars( $_POST['username'] );
-  $user_entries['question'] = htmlspecialchars( $_POST['question'] );
-  $user_entries['reponse'] = htmlspecialchars( $_POST['reponse'] );
 
   if ( !empty($_FILES['image']) )
   {
@@ -62,11 +55,37 @@ else
 
     $user_entries['avatar'] = $filename;
     $_SESSION['avatar'] = $filename;
+    $modification = $bdd -> prepare('UPDATE accounts SET avatar= :avatar WHERE id_user= :id_user');
+    $modification -> execute( ['avatar' => $_SESSION['avatar'], 'id_user' => $_SESSION['id_user'] ] );
 
+    $modification -> closeCursor();
+  }
+
+}
+
+else
+{
+  foreach ( $_POST as $key => $value )
+  {
+    $user_entries[$key] = htmlspecialchars( $value );
+  }
+
+  if ( isset($_POST['password']) )
+  {
+    $password_check = password_verify( $user_entries['password'], $_SESSION['hash_password'] );
+    if ( $password_check )
+    {
+      if ( $user_entries['new_password'] === $user_entries['new_passwordbis'] && !empty(trim($user_entries['new_password'])) )
+      {
+        $user_entries['password'] = password_hash($user_entries['new_password'], PASSWORD_DEFAULT);
+      }
+      unset($user_entries['new_password']);
+      unset($user_entries['new_passwordbis']);
+    }
   }
 
   $sql_request = 'UPDATE accounts SET ';
-  $keys = array();
+  $keys = [];
 
   $user_data = array_filter($user_entries);
 
@@ -76,11 +95,6 @@ else
   }
 
   $user_data['id_user'] = $_SESSION['id_user'];
-
-  if ( array_key_exists( 'password', $user_data ) )
-  {
-    $user_data['password'] = password_hash( $user_data['password'], PASSWORD_DEFAULT );
-  }
 
   if ( array_key_exists( 'reponse', $user_data ) )
   {
@@ -126,12 +140,12 @@ if ( $my_account  === 'infos' )
   <div id="titre_connexion">
     <h1>Vos informations personnelles</h1>
     <br>
-    <h3>Si vous le souhaitez, vous pouvez saisir les nouvelles informations à prendre en compte ci-dessous:</h3>
+    <h3>Si vous le souhaitez, vous pouvez modifier vos informations personnelles ci-dessous :</h3>
   </div>
 
   <div id="page_connexion">
     <div>
-    <form  method="post" action="my_account.php" class="champs_connexion">
+      <form  method="post" action="my_account.php" class="champs_connexion" name="infos_form">
 
         <div class="champs_connexion">
             <label><strong>Nom</strong></label>
@@ -149,13 +163,6 @@ if ( $my_account  === 'infos' )
         </div>
 
         <div class="champs_connexion">
-          <label><strong>Mot de passe</strong></label>
-          <div>
-            <a href="creation_compte.php?mdp=oublie" >Réinitialiser mon mot de passe</a>
-          </div>
-        </div>
-
-        <div class="champs_connexion">
           <label><strong>Question secrète</strong></label>
           <input type="text" name="question"/>
         </div>
@@ -166,11 +173,12 @@ if ( $my_account  === 'infos' )
         </div>
 
         <div class="champs_connexion">
-          <input type="submit" placeholder="Valider"/>
+          <input type="submit" value="Valider"/>
         </div>
 
       </form>
-      <form action="my_account.php" method="post" enctype="multipart/form-data">
+      <br><br>
+      <form action="my_account.php" method="post" enctype="multipart/form-data" name="avatar_form">
 
         <div class="champs_connexion">
             <label><strong>Insérer votre avatar :</strong></label><br/>
@@ -178,7 +186,32 @@ if ( $my_account  === 'infos' )
             <input type="submit" value="Importer" />
         </div>
 
-    </form>
+      </form>
+      <br><br>
+      <form  method="post" action="my_account.php" name="password_form">
+
+        <label><strong>Modification du mot de passe</strong></label>
+        <br><br>
+        <div class="champs_connexion">
+          <label>Mot de passe actuel</label>
+          <input type="password" name="password" required/>
+        </div>
+
+        <div class="champs_connexion">
+          <label>Nouveau mot de passe</label>
+          <input type="password" name="new_password" required/>
+        </div>
+
+        <div class="champs_connexion">
+          <label>Veuillez saisir votre nouveau </br> mot de passe à nouveau</label>
+          <input type="password" name="new_passwordbis" required/>
+        </div>
+
+        <div class="champs_connexion">
+            <input type="submit" value="Valider"/>
+        </div>
+
+      </form>
 
     </div>
   </div>

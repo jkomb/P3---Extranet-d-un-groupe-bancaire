@@ -94,9 +94,9 @@ if ( $affichage_header === 'modification' )
         <strong> <?php echo $_SESSION['nom'];?></strong>
       </div>
 
-        <div class = "nav_pres_acteur">
-          <a href="main.php">Page principale</a>
-        </div>
+      <div class = "nav_pres_acteur">
+        <a href="main.php">Page principale</a>
+      </div>
 
   </div>
 <?php

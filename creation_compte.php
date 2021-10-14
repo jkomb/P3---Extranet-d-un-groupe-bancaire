@@ -1,6 +1,6 @@
 <?php
 
-include_once('functions.php');
+include('functions.php');
 
 session_start();
 
@@ -10,7 +10,7 @@ $page = 'creation';
 
 $bdd = connexionBDD();
 
-$account_state = "";
+$account_state = '';
 
 /*
 2.
@@ -82,19 +82,12 @@ elseif ( isset($_POST['reponse']) && !isset($_POST['nom']) )
 {
   $reponse = htmlspecialchars( $_POST['reponse'] );
 
-  if ( isConnected() === false )
-  {
-    $request = $bdd -> prepare('SELECT reponse FROM accounts WHERE id_user=:id_user LIMIT 0,1' );
-    $request -> execute( array( 'id_user' => $_SESSION['temp_id_user'] ) );
+  $request = $bdd -> prepare('SELECT reponse FROM accounts WHERE id_user=:id_user LIMIT 0,1' );
+  $request -> execute( array( 'id_user' => $_SESSION['temp_id_user'] ) );
 
-    $reponse_secrete = $request -> fetch();
+  $reponse_secrete = $request -> fetch();
 
-    $reponse_check = password_verify( $reponse, $reponse_secrete['reponse'] );
-  }
-  else
-  {
-    $reponse_check = password_verify( $reponse, $_SESSION['reponse'] );
-  }
+  $reponse_check = password_verify( $reponse, $reponse_secrete['reponse'] );
 
   if ( $reponse_check )
   {
@@ -128,14 +121,8 @@ elseif ( isset($_POST['password']) && isset($_POST['passwordbis']) )
 
     $update_password = $bdd -> prepare( 'UPDATE accounts SET password=:password WHERE id_user=:id_user' );
 
-    if ( isConnected() === false )
-    {
-      $update_password -> execute( array( 'password' => $hash_password, 'id_user' => $_SESSION['temp_id_user'] ) );
-    }
-    else
-    {
-      $update_password -> execute( array( 'password' => $hash_password, 'id_user' => $_SESSION['id_user'] ) );
-    }
+
+    $update_password -> execute( array( 'password' => $hash_password, 'id_user' => $_SESSION['temp_id_user'] ) );
 
     $update_password -> closeCursor();
     $account_state = 'modifie';
@@ -157,38 +144,49 @@ vers l'accueil.
 When the user has successfully typed all his personal informations, we save them
 in the database and we redirect him to the welcome page.
 */
-elseif ( isset($_POST['nom']) )
+elseif ( array_key_exists('nom', $_POST) )
 {
-    if ( empty($user_data['nom']) || empty($user_data['prenom']) || empty($user_data['username']) || empty($user_data['password'])
-        || empty($user_data['question']) || empty($user_data['reponse']) )
+  $empty_fields = [];
+  foreach ($_POST as $key => $value)
+  {
+    $val = trim($value);
+    if ( $val === "" )
     {
+      array_push( $empty_fields, $key );
+    }
+  }
+
+  if ( !empty( $empty_fields ) )
+  {
+      $list_empty_fields = implode( ", ", $empty_fields);
       $account_state = 'vide';
-    }
-    else
-    {
-      $user_data['nom'] = mb_strtoupper( htmlspecialchars( $_POST['nom'] ) );
-      $user_data['prenom'] = ucfirst( mb_strtolower( htmlspecialchars( $_POST['prenom'] ) ) );
-      $user_data['username'] = strtolower( htmlspecialchars( $_POST['username'] ) );
-      $user_data['password'] = password_hash( htmlspecialchars( $_POST['password'] ), PASSWORD_DEFAULT);
-      $user_data['question'] = htmlspecialchars( $_POST['question'] );
-      $user_data['reponse'] = password_hash( htmlspecialchars( $_POST['reponse'] ), PASSWORD_DEFAULT);
+  }
 
-      //TRAITEMENT DES CHAÎNES DE CARACTÈRES EN SQL
-      /*
-      $subscription = $bdd -> prepare('INSERT INTO accounts(nom,prenom,username,password,question,reponse)
-                     VALUES(UPPER(:nom), CONCAT(UPPER(LEFT(:prenom, 1)),SUBSTRING(LOWER(:prenom), 2)),
-                      :username,:password,:question,:reponse)');
-      */
+  else
+  {
+    $user_data['nom'] = mb_strtoupper( htmlspecialchars( $_POST['nom'] ) );
+    $user_data['prenom'] = ucfirst( mb_strtolower( htmlspecialchars( $_POST['prenom'] ) ) );
+    $user_data['username'] = strtolower( htmlspecialchars( $_POST['username'] ) );
+    $user_data['password'] = password_hash( htmlspecialchars( $_POST['password'] ), PASSWORD_DEFAULT);
+    $user_data['question'] = htmlspecialchars( $_POST['question'] );
+    $user_data['reponse'] = password_hash( htmlspecialchars( $_POST['reponse'] ), PASSWORD_DEFAULT);
 
-      $subscription = $bdd -> prepare('INSERT INTO accounts(nom,prenom,username,password,question,reponse)
-                     VALUES( :nom, :prenom, :username, :password, :question, :reponse )' );
+    //TRAITEMENT DES CHAÎNES DE CARACTÈRES EN SQL
+    /*
+    $subscription = $bdd -> prepare('INSERT INTO accounts(nom,prenom,username,password,question,reponse)
+                   VALUES(UPPER(:nom), CONCAT(UPPER(LEFT(:prenom, 1)),SUBSTRING(LOWER(:prenom), 2)),
+                    :username,:password,:question,:reponse)');
+    */
 
-      $subscription -> execute( $user_data );
+    $subscription = $bdd -> prepare('INSERT INTO accounts(nom,prenom,username,password,question,reponse)
+                   VALUES( :nom, :prenom, :username, :password, :question, :reponse )' );
 
-      $subscription -> closeCursor();
+    $subscription -> execute( $user_data );
 
-      $account_state = 'cree';
-    }
+    $subscription -> closeCursor();
+
+    $account_state = 'cree';
+  }
 }
 
 /*
@@ -215,42 +213,43 @@ else
 
     <div id="page_connexion">
 
-        <form  method="post" action="creation_compte.php">
+      <form  method="post" action="creation_compte.php">
 
-          <div class="champs_connexion">
-            <label><strong>Nom</strong></label>
-            <input type="text" name="nom" autofocus required/>
-          </div>
+        <div class="champs_connexion">
+          <label><strong>Nom</strong></label>
+          <input type="text" name="nom" autofocus required/>
+        </div>
 
-          <div class="champs_connexion">
-            <label><strong>Prénom</strong></label>
-            <input type="text" name="prenom" required/>
-          </div>
+        <div class="champs_connexion">
+          <label><strong>Prénom</strong></label>
+          <input type="text" name="prenom" required/>
+        </div>
 
-          <div class="champs_connexion">
-            <label><strong>Nom d'utilisateur</strong></label>
-            <input type="text" name="username" required/>
-          </div>
+        <div class="champs_connexion">
+          <label><strong>Nom d'utilisateur</strong></label>
+          <input type="text" name="username" required/>
+        </div>
 
-          <div class="champs_connexion">
-            <label><strong>Mot de passe</strong></label>
-            <input type="password" name="password" required/>
-          </div>
+        <div class="champs_connexion">
+          <label><strong>Mot de passe</strong></label>
+          <input type="password" name="password" required/>
+        </div>
 
-          <div class="champs_connexion">
-            <label><strong>Question secrète</strong></label>
-            <input type="text" name="question" required/>
-          </div>
+        <div class="champs_connexion">
+          <label><strong>Question secrète</strong></label>
+          <input type="text" name="question" required/>
+        </div>
 
-          <div class="champs_connexion">
-            <label><strong>Réponse à la réponse secrète</strong></label>
-            <input type="password" name="reponse" required/>
-          </div>
+        <div class="champs_connexion">
+          <label><strong>Réponse à la réponse secrète</strong></label>
+          <input type="password" name="reponse" required/>
+        </div>
 
-          <div class="champs_connexion">
-            <input type="submit" value="Valider"/>
-          </div>
-        </form>
+        <div class="champs_connexion">
+          <input type="submit" value="Valider"/>
+        </div>
+
+      </form>
 
     </div>
   </body>
@@ -400,9 +399,8 @@ if ( $account_state === 'mauvaise_reponse' )
 
 if ( $account_state === 'modifie' )
 {
-  if ( isConnected() === false )
-  {
     header("Refresh:3; url=index.php");
+    include('header.php');
 ?>
 
   <body>
@@ -414,25 +412,8 @@ if ( $account_state === 'modifie' )
 
       </div>
   </body>
+
 <?php
-  }
-  else
-  {
-    header("Refresh:3; url=my_account.php");
-?>
-
-  <body>
-      <div id="titre_connexion">
-
-        <h2>Vos modifications ont bien été prises en compte</h2>
-        <br><br>
-        <p>Vous allez être redirigé vers la page Mon Compte</p>
-
-      </div>
-  </body>
-<?php
-  }
-  include('header.php');
 }
 
 if ( $account_state === 'non_modifie' )
@@ -471,15 +452,17 @@ if ( $account_state === 'cree' )
 
 if ( $account_state === 'vide' )
 {
-  header("Refresh:3; url=creation_compte.php?mdp=oublie");
+  header("Refresh:6; url=creation_compte.php");
   include('header.php');
 ?>
   <body>
       <div id="titre_connexion">
 
-        <h2>Un ou plusieurs champs saisis sont vides.</h2>
+        <h2>Un ou plusieurs champs saisis sont vides :</h2>
         <br><br>
-        <p>Vous allez être redirigé vers la page Mon Compte</p>
+        <?php echo $list_empty_fields ?>
+        <br><br>
+        <p><strong>Merci de compléter le formulaire entièrement.</strong></p>
 
       </div>
   </body>
