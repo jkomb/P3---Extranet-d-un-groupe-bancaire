@@ -22,43 +22,49 @@ if ( empty($_POST) )
   {
     if ( is_uploaded_file($_FILES['image']['tmp_name'] ) === false )
     {
-      echo '1:Error on upload: Invalid file definition';
-      exit;
+      $my_account = 'problem_file';
     }
-
-    if ( $_FILES['image']['size'] > $max_file_size_bytes )
+    else
     {
-      echo '2:Exceeded file size limit.';
-      exit;
+      if ( $_FILES['image']['size'] > $max_file_size_bytes )
+      {
+        $my_account = 'exceeded_size';
+      }
+      else
+      {
+        $file_mimetype = mime_content_type($_FILES['image']['tmp_name']);
+        $authorized_mime_types = array( 'image/jpeg', 'image/jpg', 'image/png', 'image/gif');
+
+        $verify_mime_type = array_search( $file_mimetype, $authorized_mime_types );
+
+        if ( $verify_mime_type === false )
+        {
+          $my_account = 'wrong_format';
+        }
+        else
+        {
+          $uploadName = $_FILES['image']['name'];
+          $extension = strtolower(substr($uploadName, strripos($uploadName, '.')+1));
+          $filename = hash_file('sha256', $_FILES['image']['tmp_name']) . '.' . $extension;
+
+          $save_path = "./uploads/" . $filename;
+
+          if ( !move_uploaded_file( $_FILES['image']['tmp_name'], $save_path ) )
+          {
+            $my_account = 'upload_issue';
+          }
+          else
+          {
+            $user_entries['avatar'] = $filename;
+            $_SESSION['avatar'] = $filename;
+            $modification = $bdd -> prepare('UPDATE accounts SET avatar= :avatar WHERE id_user= :id_user');
+            $modification -> execute( ['avatar' => $_SESSION['avatar'], 'id_user' => $_SESSION['id_user'] ] );
+
+            $modification -> closeCursor();
+          }
+        }
+      }
     }
-
-    $file_mimetype = mime_content_type($_FILES['image']['tmp_name']);
-    $authorized_mime_types = array( 'image/jpeg', 'image/jpg', 'image/png', 'image/gif');
-
-    $verify_mime_type = array_search( $file_mimetype, $authorized_mime_types );
-
-
-    if ( $verify_mime_type === false )
-    {
-      echo '3:Invalid file format.';
-      exit;
-    }
-
-    $uploadName = $_FILES['image']['name'];
-    $extension = strtolower(substr($uploadName, strripos($uploadName, '.')+1));
-    $filename = hash_file('sha256', $_FILES['image']['tmp_name']) . '.' . $extension;
-
-    if ( !move_uploaded_file( $_FILES['image']['tmp_name'], './uploads/'.$filename ) )
-    {
-      echo __LINE__;
-    }
-
-    $user_entries['avatar'] = $filename;
-    $_SESSION['avatar'] = $filename;
-    $modification = $bdd -> prepare('UPDATE accounts SET avatar= :avatar WHERE id_user= :id_user');
-    $modification -> execute( ['avatar' => $_SESSION['avatar'], 'id_user' => $_SESSION['id_user'] ] );
-
-    $modification -> closeCursor();
   }
 
 }
@@ -145,7 +151,7 @@ if ( $my_account  === 'infos' )
 
   <div id="page_connexion">
     <div>
-      <form  method="post" action="my_account.php" class="champs_connexion" name="infos_form">
+      <form  method="post" action="my_account.php" class="champs_connexion">
 
         <div class="champs_connexion">
             <label><strong>Nom</strong></label>
@@ -178,17 +184,17 @@ if ( $my_account  === 'infos' )
 
       </form>
       <br><br>
-      <form action="my_account.php" method="post" enctype="multipart/form-data" name="avatar_form">
+      <form action="my_account.php" method="post" enctype="multipart/form-data">
 
         <div class="champs_connexion">
-            <label><strong>Insérer votre avatar :</strong></label><br/>
+            <label><strong>Insérer votre avatar </strong>(taille max. : 8 mo)</label><br/>
             <input type="file" name="image"/><br/>
             <input type="submit" value="Importer" />
         </div>
 
       </form>
       <br><br>
-      <form  method="post" action="my_account.php" name="password_form">
+      <form  method="post" action="my_account.php">
 
         <label><strong>Modification du mot de passe</strong></label>
         <br><br>
@@ -229,6 +235,62 @@ if ( $my_account  === 'modifie' )
         <div id="titre_connexion">
           <h2>Vos informations ont bien été enregistrées.</h2>
         </div>
+  </body>
+<?php
+}
+
+if ( $my_account  === 'problem_file' )
+{
+  header("Refresh:10; url=my_account.php");
+  include('header.php');
+?>
+  <body>
+        <div id="titre_connexion">
+          <h2>Il y a eu un problème lors de l'importation de votre fichier.</h2></br></br>
+          <p>Veuillez essayer avec un autre fichier ou contacter notre support dans la rubrique <strong>Contact</strong>
+            situé en bas de page</p>
+        </div>
+  </body>
+<?php
+}
+
+if ( $my_account  === 'exceeded_size' )
+{
+  header("Refresh:5; url=my_account.php");
+  include('header.php');
+?>
+  <body>
+        <div id="titre_connexion">
+          <h2>Votre fichier est trop volumineux.</h2></br></br>
+          <p>Veuillez essayer avec un autre fichier ou tentez de le compresser avant de l'importer à nouveau.</p>
+        </div>
+  </body>
+<?php
+}
+
+if ( $my_account  === 'wrong_format' )
+{
+  header("Refresh:5; url=my_account.php");
+  include('header.php');
+?>
+  <body>
+        <div id="titre_connexion">
+          <h2>Votre fichier n'a pas le bon format.</h2></br></br>
+          <p>Les formats d'image autorisés sont : JPEG, JPG, GIF, PNG .</p>
+        </div>
+  </body>
+<?php
+}
+
+if ( $my_account  === 'upload_issue' )
+{
+  header("Refresh:5; url=my_account.php");
+  include('header.php');
+?>
+  <body>
+    <h2>Il y a eu un problème lors de l'importation de votre fichier.</h2></br></br>
+    <p>Veuillez essayer avec un autre fichier ou contacter notre support dans la rubrique <strong>Contact</strong>
+      situé en bas de page</p>
   </body>
 <?php
 }

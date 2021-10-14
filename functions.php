@@ -67,9 +67,9 @@ function voteAlreadyExists($pdo, $id_user, $id_acteur_choisi)
     return (bool) $request -> fetchColumn();
 }
 
-function isAdmin($pdo, $id_user)
+function isAdmin($bdd, $id_user)
 {
-    $request = $pdo -> prepare("SELECT 1 FROM admin WHERE id_user= :id_user");
+    $request = $bdd -> prepare("SELECT 1 FROM admin WHERE id_user= :id_user");
     $request -> execute(['id_user' => $id_user]);
     return (bool) $request -> fetchColumn();
 }

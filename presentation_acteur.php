@@ -170,6 +170,7 @@ if ( isset($_GET['acteur']) )
     exit;
   }
 
+  //Supression des commentaires sélectionnés par l'utilisateur administrateur
   if( isset($_POST['delete']) && !empty($_POST['delete']) )
   {
     $delete_request = 'DELETE from posts WHERE ';
@@ -178,7 +179,7 @@ if ( isset($_GET['acteur']) )
     {
       array_push( $list_posts_delete, sprintf( 'id_post=%s', $val ) );
     }
-    $delete_request .= implode( " AND ", $list_posts_delete );
+    $delete_request .= implode( " OR ", $list_posts_delete );
 
     $number_posts_delete = count($list_posts_delete);
     $update_stat_posts_request = sprintf( 'UPDATE acteurs SET total_posts = total_posts - %s WHERE id_acteur= :id_acteur',
@@ -187,7 +188,7 @@ if ( isset($_GET['acteur']) )
     try
     {
       $bdd -> beginTransaction();
-      $delete_posts = $bdd -> exec($delete_request);
+      $delete_posts = $bdd -> query($delete_request);
       $update_stat_posts = $bdd -> prepare($update_stat_posts_request);
       $update_stat_posts -> execute ( ['id_acteur' => $id_acteur_choisi] );
       $bdd -> commit();
@@ -203,7 +204,11 @@ if ( isset($_GET['acteur']) )
         exit();
       }
 
+      $delete_posts -> closeCursor();
+      $update_stat_posts -> closeCursor();
 
+      header('Location: presentation_acteur.php?acteur='.$id_acteur_choisi);
+      exit;
   }
 
 }
@@ -305,7 +310,7 @@ if ( $exists_actor === true )
 ?>
     <section class="saisie_com">
         <div>
-          <label><strong>Vous avez déjà donné voté ici.</strong></label>
+          <label><strong>Vous avez déjà voté ici.</strong></label>
         </div>
     </section>
 <?php
