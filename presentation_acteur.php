@@ -171,7 +171,7 @@ if ( isset($_GET['acteur']) )
   }
 
   //Supression des commentaires sélectionnés par l'utilisateur administrateur
-  if( isset($_POST['delete']) && !empty($_POST['delete']) )
+  if( isset($_POST['delete_posts']) && !empty($_POST['delete_posts']) )
   {
     $delete_request = 'DELETE from posts WHERE ';
     $list_posts_delete = [];
@@ -337,7 +337,7 @@ if ( $exists_actor === true )
           <h5><?php echo $posts['commentaire']; ?></h5>
         </div>
         <div>
-          <input type="checkbox" name="delete[]" value=<?php echo intval($posts['id_post']);?> />
+          <input type="checkbox" name="delete_posts[]" value=<?php echo intval($posts['id_post']);?> />
         </div>
 
       </div>

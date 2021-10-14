@@ -223,6 +223,12 @@ article
     margin-right: 8px;
 }
 
+.avatar
+{
+    max-width: 5em;
+    height: auto;
+}
+
 .logo_acteurs
 {
     max-width: 10em;

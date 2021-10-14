@@ -69,6 +69,18 @@ if ( empty($_POST) )
 
 }
 
+elseif (isset($_POST['delete_image']) && !empty($_POST['delete_image']))
+{
+  if ( array_key_exists('avatar', $_SESSION) )
+  {
+    unlink('./uploads/'.$_SESSION['avatar']);
+    unset($_SESSION['avatar']);
+
+    header('Location: my_account.php');
+    exit;
+  }
+}
+
 else
 {
   foreach ( $_POST as $key => $value )
@@ -191,6 +203,11 @@ if ( $my_account  === 'infos' )
             <input type="file" name="image"/><br/>
             <input type="submit" value="Importer" />
         </div>
+        <div class="champs_connexion">
+            <label><strong>Supprimer votre avatar</strong></label><br/>
+            <input type="submit" name="delete_image" value="Supprimer" />
+        </div>
+
 
       </form>
       <br><br>
@@ -241,7 +258,7 @@ if ( $my_account  === 'modifie' )
 
 if ( $my_account  === 'problem_file' )
 {
-  header("Refresh:10; url=my_account.php");
+  header("Refresh:4; url=my_account.php");
   include('header.php');
 ?>
   <body>
@@ -256,7 +273,7 @@ if ( $my_account  === 'problem_file' )
 
 if ( $my_account  === 'exceeded_size' )
 {
-  header("Refresh:5; url=my_account.php");
+  header("Refresh:4; url=my_account.php");
   include('header.php');
 ?>
   <body>
@@ -270,7 +287,7 @@ if ( $my_account  === 'exceeded_size' )
 
 if ( $my_account  === 'wrong_format' )
 {
-  header("Refresh:5; url=my_account.php");
+  header("Refresh:3; url=my_account.php");
   include('header.php');
 ?>
   <body>

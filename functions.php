@@ -45,10 +45,10 @@ function redirectIndexIfNotConnected()
 
 function displayAvatar()
 {
-  if( $_SESSION['avatar'] != "" )
+  if( isset($_SESSION['avatar']) && $_SESSION['avatar'] != "" )
   {
 ?>
-    <img src="./uploads/<?php echo $_SESSION['avatar'];?>" alt="<?php $_SESSION['username'];?>_avatar" class ="logo_acteurs" />
+    <img src="./uploads/<?php echo $_SESSION['avatar'];?>" alt="<?php $_SESSION['username'];?>_avatar" class ="avatar" />
 <?php
   }
 }
