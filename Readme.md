@@ -82,7 +82,6 @@ CREATE TABLE IF NOT EXISTS `acteurs` (
   `nom_acteur` varchar(20) NOT NULL,
   `description_courte` text NOT NULL,
   `description` text NOT NULL,
-  `logo` varchar(10) NOT NULL,
   `total_posts` int(11) NOT NULL DEFAULT '0',
   `total_likes` int(11) NOT NULL DEFAULT '0',
   `total_dislikes` int(11) NOT NULL DEFAULT '0',
