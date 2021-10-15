@@ -90,34 +90,37 @@ if ( isset($_GET['acteur']) )
   {
     $post = htmlspecialchars( $_POST['post'] );
 
-    try
+    if ( trim($post) != "" )
     {
-      $bdd -> beginTransaction();
-      $update_stat_posts = $bdd -> prepare('UPDATE acteurs SET total_posts = total_posts + 1 WHERE id_acteur= :id_acteur');
-      $update_stat_posts -> execute ( ['id_acteur' => $id_acteur_choisi] );
-      $inscription_post = $bdd -> prepare('INSERT INTO posts(id_user,id_acteur, post) VALUES (:id_user,:id_acteur,:post)');
-      $inscription_post -> execute(
-                                    array(
-                                          'id_user' => $_SESSION['id_user'],
-                                          'id_acteur' => $id_acteur_choisi,
-                                          'post' => $post
-                                        )
-                                  );
-      $bdd -> commit();
-    }catch(Exception $e)
+      try
       {
-        $bdd ->rollback();
+        $bdd -> beginTransaction();
+        $update_stat_posts = $bdd -> prepare('UPDATE acteurs SET total_posts = total_posts + 1 WHERE id_acteur= :id_acteur');
+        $update_stat_posts -> execute ( ['id_acteur' => $id_acteur_choisi] );
+        $inscription_post = $bdd -> prepare('INSERT INTO posts(id_user,id_acteur, post) VALUES (:id_user,:id_acteur,:post)');
+        $inscription_post -> execute(
+                                      array(
+                                            'id_user' => $_SESSION['id_user'],
+                                            'id_acteur' => $id_acteur_choisi,
+                                            'post' => $post
+                                          )
+                                    );
+        $bdd -> commit();
+      }catch(Exception $e)
+        {
+          $bdd ->rollback();
 
-        // émettre un message d'erreur à l'utilisateur lui disant que son vote n'a
-        // pas pu être pris en compte et qu'il devra réessayer ultérieurement
-        echo $e -> getMessage();
-        echo $e -> getCode();
+          // émettre un message d'erreur à l'utilisateur lui disant que son vote n'a
+          // pas pu être pris en compte et qu'il devra réessayer ultérieurement
+          echo $e -> getMessage();
+          echo $e -> getCode();
 
-        exit();
-      }
+          exit();
+        }
 
-    $update_stat_posts -> closeCursor();
-    $inscription_post -> closeCursor();
+      $update_stat_posts -> closeCursor();
+      $inscription_post -> closeCursor();
+    }
 
     header('Location: presentation_acteur.php?acteur='.$id_acteur_choisi);
     exit;
@@ -175,7 +178,7 @@ if ( isset($_GET['acteur']) )
   {
     $delete_request = 'DELETE from posts WHERE ';
     $list_posts_delete = [];
-    foreach($_POST['delete'] as $val)
+    foreach($_POST['delete_posts'] as $val)
     {
       array_push( $list_posts_delete, sprintf( 'id_post=%s', $val ) );
     }
@@ -222,104 +225,90 @@ if ( $exists_actor === true )
 {
   include('header.php');
 ?>
-<body>
-  <section class="presentation">
 
-    <article>
+  <div class="presentation">
 
-      <div class="titre_logo_presentation">
-        <br>
-        <img src="images/<?php echo $info_acteur['nom_acteur']; ?>.png" alt="Logo <?php echo $info_acteur['nom_acteur']; ?>"/ class="logo"/>
-        <br>
-      </div>
-
+    <div class="titre_logo_presentation">
+      <br>
+      <img src="images/<?php echo $id_acteur_choisi; ?>.png" alt="Logo <?php echo $info_acteur['nom_acteur']; ?>" class="logo"/>
+      <br>
+    </div>
+    <div>
       <?php echo nl2br( $info_acteur['description'] ); ?>
+    </div>
 
-    </article>
+  </div>
 
-  </section>
+<div class="interaction_utilisateur">
 
-  <section class="interaction_utilisateur">
+  <div class="saisie_com">
 
-    <section class="saisie_com">
+    <div>
+      <label><strong><?php echo $number_posts;?></strong> Commentaires</label>
+    </div>
+
+    <div class="stat_likes">
         <div>
-          <label><strong><?php echo $number_posts;?></strong> Commentaires</label>
+          <label><strong><?php echo $number_dislikes;?></strong></label>
         </div>
-    </section>
+        <div>
+          <img src="images/like-dislike.jpg" alt="like-dislike" class="like"/>
+        </div>
+        <div>
+          <label><strong><?php echo $number_likes;?></strong></label>
+        </div>
+    </div>
+
+  </div>
+
+  <div class="saisie_com">
 
 <?php
   if ( $affichage_post )
   {
 ?>
-    <div class="saisie_com">
-      <form  method="post" action="presentation_acteur.php?acteur=<?php echo $id_acteur_choisi; ?>">
 
-        <div>
-          <label><strong>Ajouter un commentaire </strong>(vous ne pouvez mettre un commentaire qu'une seule fois!)</label>
-        </div>
-        <br>
-        <div>
-          <textarea class="zone_commentaire" name="post" placeholder ="Votre commentaire"></textarea>
-        </div>
-        <br>
-        <div>
-          <input type="submit" value="Valide le commentaire"/>
-        </div>
+    <form  method="post" action="presentation_acteur.php?acteur=<?php echo $id_acteur_choisi; ?>">
 
-      </form>
-    </div>
-<?php
-  }
-  else
-  {
-?>
-  <section class="saisie_com">
       <div>
-        <label><strong>Vous avez déjà écrit un commentaire.</strong></label>
+        <label><strong>Ajouter un commentaire </strong>(vous ne pouvez laisser qu'un seul commentaire)</label>
       </div>
-  </section>
+      <br>
+      <div>
+        <textarea class="zone_commentaire" name="post" placeholder ="Votre commentaire"></textarea>
+      </div>
+      <br>
+      <div>
+        <input type="submit" value="Valide le commentaire"/>
+      </div>
+
+    </form>
 <?php
   }
 
-?>
-
-  <section class="saisie_com">
-      <div>
-        <label>Likes: <strong><?php echo $number_likes;?></strong></label> /
-        <label>Dislikes: <strong><?php echo $number_dislikes;?></strong></label>
-      </div>
-  </section>
-
-<?php
   if ( $affichage_vote )
   {
 ?>
-
-    <div class="saisie_com">
       <form  method="post" action="presentation_acteur.php?acteur=<?php echo $id_acteur_choisi; ?>">
-
-        <button type='submit' name='like'>J'aime</button>
-        <button type='submit' name='dislike'>Je n'aime pas</button>
-
-      </form>
-    </div>
-<?php
-  }
-  else
-  {
-?>
-    <section class="saisie_com">
-        <div>
-          <label><strong>Vous avez déjà voté ici.</strong></label>
+        <div class="saisie_vote">
+          <label>Vous ne pouvez voter qu'une seule fois</label>
+          <br>
         </div>
-    </section>
+        <div class="saisie_vote">
+          <div>
+            <button type='submit' name='like'>J'aime</button>
+            <button type='submit' name='dislike'>Je n'aime pas</button>
+          </div>
+        </div>
+      </form>
 <?php
   }
-
 ?>
-  </section>
+  </div>
 
-  <section class="section_commentaires">
+</div>
+
+<div class="section_commentaires">
 <?php
   if ( $admin && ($number_posts != 0) )
   {
@@ -366,8 +355,9 @@ if ( $exists_actor === true )
     }
   }
 ?>
-    </section>
-  </body>
+
+</div>
+
 <?php
 }
 

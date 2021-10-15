@@ -203,7 +203,7 @@ else
   redirectMainIfConnected();
   include('header.php');
 ?>
-  <body>
+
     <div id="titre_connexion">
 
       <h1>Veuillez renseigner vos données personnelles</h1>
@@ -252,7 +252,7 @@ else
       </form>
 
     </div>
-  </body>
+
 <?php
 }
 
@@ -261,7 +261,7 @@ if ( $account_state === "mdp_oublie" )
   include('header.php');
 ?>
 
-  <body>
+
       <div id="titre_connexion">
 
         <h1>Afin de réinitialiser votre mot de passe,</h1>
@@ -275,7 +275,8 @@ if ( $account_state === "mdp_oublie" )
           <form  method="post" action="creation_compte.php">
 
             <div class="champs_connexion">
-              <label>Merci de saisir le nom d'utilisateur défini lors de la création de votre compte</label></br>
+              <label>Merci de saisir le nom d'utilisateur défini lors de la création de votre compte</label>
+              <br>
               <input type="text" name="username" autofocus required/>
             </div>
 
@@ -285,7 +286,7 @@ if ( $account_state === "mdp_oublie" )
           </form>
 
       </div>';
-  </body>
+
 <?php
 }
 
@@ -294,7 +295,7 @@ if ( $account_state === 'question_secrete' )
   include('header.php');
 ?>
 
-  <body>
+
     <div id="titre_connexion">
 
       <h1>Veuillez répondre à votre question secrète</h1>
@@ -306,7 +307,8 @@ if ( $account_state === 'question_secrete' )
         <form  method="post" action="creation_compte.php">
 
           <div class="champs_connexion">
-            <label><strong><?php echo $question; ?></strong></label></br>
+            <label><strong><?php echo $question; ?></strong></label>
+            <br>
             <input type="password" name="reponse"  autofocus required/>
           </div>
 
@@ -316,7 +318,7 @@ if ( $account_state === 'question_secrete' )
         </form>
 
     </div>';
-  </body>
+
 
 <?php
 }
@@ -327,15 +329,16 @@ if ( $account_state === 'inconnu' )
   include('header.php');
 ?>
 
-  <body>
+
     <div id="titre_connexion">
 
-      <h1>Utilisateur inconnu</h1></br>
+      <h1>Utilisateur inconnu</h1>
+      <br>
       <h2>Merci de rentrer un nom d'utilisateur existant!</h2>
       <br>
 
     </div>
-  </body>
+
 
 <?php
 }
@@ -345,7 +348,7 @@ if ( $account_state === 'bonne_reponse' )
   include('header.php');
 ?>
 
-  <body>
+
     <div id="titre_connexion">
 
       <h1>Veuillez saisir votre nouveau mot de passe</h1>
@@ -358,12 +361,14 @@ if ( $account_state === 'bonne_reponse' )
         <form  method="post" action="creation_compte.php">
 
           <div class="champs_connexion">
-            <label><strong>Nouveau mot de passe</strong></label></br>
+            <label><strong>Nouveau mot de passe</strong></label>
+            <br>
             <input type="password" name="password" autofocus required/>
           </div>
 
           <div class="champs_connexion">
-            <label><strong>Veuillez saisir votre nouveau </br> mot de passe à nouveau</strong></label></br>
+            <label><strong>Veuillez le saisir à nouveau</strong></label>
+            <br>
             <input type="password" name="passwordbis" required/>
           </div>
 
@@ -373,7 +378,7 @@ if ( $account_state === 'bonne_reponse' )
         </form>
 
     </div>;
-  </body>
+
 
 <?php
 }
@@ -384,15 +389,16 @@ if ( $account_state === 'mauvaise_reponse' )
   include('header.php');
 ?>
 
-  <body>
+
       <div id="titre_connexion">
 
-        <h1>Réponse incorrecte !</h1></br>
+        <h1>Réponse incorrecte !</h1>
+        <br>
         <h2>Merci de vous identifier à nouveau</h2>
         <br>
 
       </div>
-  </body>
+
 
 <?php
 }
@@ -403,7 +409,7 @@ if ( $account_state === 'modifie' )
     include('header.php');
 ?>
 
-  <body>
+
       <div id="titre_connexion">
 
         <h2>Vos modifications ont bien été prises en compte</h2>
@@ -411,7 +417,7 @@ if ( $account_state === 'modifie' )
         <p>Vous allez être redirigé vers la page d'accueil</p>
 
       </div>
-  </body>
+
 
 <?php
 }
@@ -421,7 +427,7 @@ if ( $account_state === 'non_modifie' )
   header("Refresh:3; url=creation_compte.php?mdp=oublie");
   include('header.php');
 ?>
-  <body>
+
       <div id="titre_connexion">
 
         <h2>Vos modifications n'ont PAS été prises en compte!</h2>
@@ -429,7 +435,7 @@ if ( $account_state === 'non_modifie' )
         <p><strong>Les 2 saisies de votre nouveau mot de passe ne sont pas identiques!</strong></p>
 
       </div>
-  </body>
+
 <?php
 }
 
@@ -438,7 +444,7 @@ if ( $account_state === 'cree' )
   header("Refresh:3; url=index.php");
   include('header.php');
 ?>
-  <body>
+
       <div id="titre_connexion">
 
         <h2>Vos informations ont bien été enregistrées.</h2>
@@ -446,7 +452,7 @@ if ( $account_state === 'cree' )
         <p>Vous allez être redirigé vers la page d'accueil</p>
 
       </div>
-  </body>
+
 <?php
 }
 
@@ -455,7 +461,7 @@ if ( $account_state === 'vide' )
   header("Refresh:6; url=creation_compte.php");
   include('header.php');
 ?>
-  <body>
+
       <div id="titre_connexion">
 
         <h2>Un ou plusieurs champs saisis sont vides :</h2>
@@ -465,7 +471,7 @@ if ( $account_state === 'vide' )
         <p><strong>Merci de compléter le formulaire entièrement.</strong></p>
 
       </div>
-  </body>
+
 <?php
 }
 

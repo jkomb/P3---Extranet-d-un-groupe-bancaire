@@ -18,12 +18,12 @@
 
 header
 {
-    background: url('../images/separateur_noir.png') no-repeat bottom;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items:stretch,center;
-    margin: 1em;
+    align-items: stretch,center;
+    margin-left: 2em;
+    margin-right: 2em;
     padding-top: 1em;
 }
 
@@ -34,16 +34,7 @@ header
     justify-content: flex-end;
 }
 
-#logo
-{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-size: 1.5em;
-    font-weight: bold;
-}
-
-#logo img
+.navigation img
 {
     max-width: 40%;
     height: auto;
@@ -53,8 +44,25 @@ header
 {
     display:flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items:flex-end;
     justify-content: space-between;
+}
+
+#logo
+{
+    display:flex;
+    flex-direction: column;
+    align-items:flex-start;
+    justify-content: space-between;
+}
+
+.logo_GBAF
+{
+    align-items: center;
+    max-width: 8em;
+    height: auto;
+    vertical-align: middle;
+    margin-right: 8px;
 }
 
 #connexion_head
@@ -62,23 +70,14 @@ header
   text-align: center;
 }
 
-#creation_head
-{
-  display:flex;
-  flex-direction: row;
-  width:10em;
-  height:10em;
-  text-align:center;
-  padding:10px;
-}
-
 .nav_pres_acteur
 {
   display:flex;
   flex-direction: row;
-  justify-content: flex-end;
-  width:100%;
-  font-size: 1.1em;
+  justify-content: space-between;
+  align-items: stretch,center;
+  padding-left: 1em;
+  font-size: 1em;
   color: #181818;
   text-decoration: none;
 }
@@ -124,39 +123,19 @@ nav a:hover
     border-bottom: 3px solid #760001;
 }
 
-/* Bannière */
-
-#banniere_image
-{
-    margin-top: 15px;
-    height: 200px;
-    background-origin: initial;
-    background: url('../images/banniere_description.jpg') no-repeat;
-    position: relative;
-    margin-bottom: 25px;
-}
-
-#banniere_description
-{
-    position: absolute;
-    bottom: 0;
-    width: 99.5%;
-    height: 15px;
-    padding-top: 15px;
-    padding-left: 4px;
-    color: black;
-    font-size: 0.9em;
-}
-
-
 /* Corps */
 
-html, body
+html,body
+{
+  min-height:100%;
+}
+
+html
 {
     background: url('../images/hexagon_background.png');
     font-family: 'latoregular';
     color: #181818;
-    min-height: 100vh;
+    height: 100%;
 }
 
 h1
@@ -205,15 +184,6 @@ article
     flex: 3;
 }
 
-.logo_GBAF
-{
-    align-items: center;
-    max-width: 10em;
-    height: auto;
-    vertical-align: middle;
-    margin-right: 8px;
-}
-
 .logo
 {
     align-items: center;
@@ -231,10 +201,16 @@ article
 
 .logo_acteurs
 {
-    max-width: 10em;
+    max-width: 8em;
     height: auto;
     vertical-align: center;
     margin-right: 8px;
+}
+
+.like
+{
+    max-width: 4em;
+    height: auto;
 }
 
 .section_acteurs
@@ -242,6 +218,7 @@ article
   display: flex;
   flex-direction: column;
   align-items: flex-start ;
+  width: auto;
   margin-left: 1em;
   margin-right: 1em;
   padding-bottom: 1em;
@@ -304,31 +281,43 @@ article
 .interaction_utilisateur
 {
   display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
+  flex-direction: column;
+  width: auto;
   align-items: stretch, center;
-  padding:1em;
-  width: 90%;
   border-bottom: 1px solid #c3c3c3;
   border-top: 1px solid #c3c3c3;
+  margin: 2em;
+  padding: 1em;
 }
 
 .saisie_com
 {
-  display:flex;
-  flex-direction:column;
-  width: auto;
+  display: flex;
+  flex-direction: row;
   align-items: flex-start;
-  margin-left: 2em;
-  margin-right: 2em;
-  margin-bottom: 1em;
-  padding:1em;
+  justify-content: space-around;
 }
+
+.saisie_vote
+{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat_likes
+{
+  display:flex;
+  flex-direction:row;
+  align-items: center;
+}
+
 
 textarea
 {
   resize:vertical;
-  width: 50em;
+  min-width: 20em;
   min-height: 2em;
   max-height: 10em;
 }
@@ -337,11 +326,8 @@ textarea
 {
   display:flex;
   flex-direction:column;
-  width: 100%;
   align-items: flex-start;
-  margin-left: 3em;
-  margin-right: 3em;
-  margin-top: 0em;
+  margin-left: 2em;
 }
 
 .commentaire
@@ -351,7 +337,7 @@ textarea
   width: auto;
   margin-top: 1em;
   align-items: flex-start;
-  border: 1px solid #c3c3c3;
+  border-bottom: 1px solid #c3c3c3;
 }
 
 /* Footer */
@@ -390,14 +376,17 @@ footer h1
   text-decoration: none;
 }
 
-.mention a:visited {
+.mention a:visited
+{
   text-decoration: none;
 }
 
-.mention a:hover {
+.mention a:hover
+{
   text-decoration: underline;
 }
 
-.mention a:active {
+.mention a:active
+{
   text-decoration: underline;
 }

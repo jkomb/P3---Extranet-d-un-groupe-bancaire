@@ -1,22 +1,20 @@
 <!DOCTYPE html>
-
+<html lang="fr">
 <head>
 
 <title>Groupement Banque Assurance Français</title>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" href="main.css" />
-<link rel="icon" type="image/png" sizes="16x16" href="images\GBAF.png"/>
+<link rel="icon" type="image/png" sizes="16x16" href="images/GBAF.png"/>
 
 </head>
 
+<body>
 <header>
 
-<div id="logo">
-    <img src="images/GBAF.png" alt="Logo GBAF" />
-    <div>
-      <h2>Votre partenaire dans le temps</h2>
-    </div>
+<div id="logo_header">
+    <img src="images/GBAF.png" alt="Logo GBAF" class="logo_GBAF" />
 </div>
 
 <?php
@@ -73,8 +71,8 @@ if ( $affichage_header === 'creation' )
 if ( $affichage_header === 'retour_accueil' )
 {
 ?>
-  <div id="creation_head">
-    <p>Retourner à l'<a href=index.php><strong>ACCUEIL</strong></a></p>
+  <div id="navigation">
+    <p>Retourner à l'<a href=index.php><strong>accueil</strong></a></p>
   </div>
 <?php
 }
@@ -85,12 +83,13 @@ if ( $affichage_header === 'modification' )
   <div id="navigation">
 
       <div>
-        <a href="deconnexion.php"<button>Se Déconnecter</button></a></br>
+        <a href="deconnexion.php">Se Déconnecter</a>
+        <br>
         <?php displayAvatar(); ?>
       </div>
 
       <div>
-        Vous êtes connecté en tant que <?php echo $_SESSION['prenom'];?>
+        <?php echo $_SESSION['prenom'];?>
         <strong> <?php echo $_SESSION['nom'];?></strong>
       </div>
 
@@ -108,22 +107,26 @@ if ( $affichage_header === 'complet' )
   <div id="navigation">
 
       <div>
-        <a href="deconnexion.php"<button>Se Déconnecter</button></a></br>
+        <a href="deconnexion.php">Se Déconnecter</a>
+        <br>
         <?php displayAvatar(); ?>
       </div>
 
       <div>
-        Vous êtes connecté en tant que <?php echo $_SESSION['prenom'];?>
+        <?php echo $_SESSION['prenom'];?>
         <strong> <?php echo $_SESSION['nom'];?></strong>
       </div>
 
-      <div class = "nav_pres_acteur">
-        <div class = "nav_pres_acteur">
+      <div class="nav_pres_acteur">
+
+        <div class="nav_pres_acteur">
           <a href="main.php">Page principale</a>
         </div>
-        <div class = "nav_pres_acteur">
+
+        <div class="nav_pres_acteur">
           <a href="my_account.php">Mon Compte</a>
         </div>
+
       </div>
 
   </div>
@@ -137,12 +140,13 @@ if ( $affichage_header === 'principale' )
   <div id="navigation">
 
     <div>
-      <a href="deconnexion.php"<button>Se Déconnecter</button></a></br>
+      <a href="deconnexion.php">Se Déconnecter</a>
+      <br>
       <?php displayAvatar(); ?>
     </div>
 
     <div>
-      Vous êtes connecté en tant que <?php echo $_SESSION['prenom'];?>
+      <?php echo $_SESSION['prenom'];?>
       <strong> <?php echo $_SESSION['nom'];?></strong>
     </div>
 

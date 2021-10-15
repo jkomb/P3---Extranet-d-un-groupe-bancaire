@@ -6,3 +6,5 @@
       <a href=#><h1>Contact</h1></a>
   </div>
 </footer>
+</body>
+</html>

@@ -66,6 +66,7 @@ if( isConnected() === false || ( isset($user_state) && $user_state === 'not_foun
     header("Refresh:3; url=index.php");
     include('header.php');
 ?>
+
     <div id="titre_connexion">
 
       <h1>Vos identifiants ne sont pas corrects !</h1>
@@ -73,6 +74,7 @@ if( isConnected() === false || ( isset($user_state) && $user_state === 'not_foun
       <h2>Vous allez être redirigé vers la page d'accueil.</h2>
 
     </div>
+
 <?php
   }
 
@@ -80,6 +82,7 @@ else
 {
   include('header.php');
 ?>
+
     <div id="titre_connexion">
 
       <h1>Veuillez vous connecter</h1>
@@ -114,7 +117,7 @@ else
       </div>
 
     </div>
-
+  
 <?php
   }
 }
