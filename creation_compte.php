@@ -3,6 +3,7 @@
 include('functions.php');
 
 session_start();
+$_SESSION =array();
 
 redirectMainIfConnected();
 
@@ -10,7 +11,9 @@ $page = 'creation';
 
 $bdd = connexionBDD();
 
-$account_state = '';
+$account_state = 'creation';
+
+$_SESSION['creation_compte'] = '';
 
 /*
 2.
@@ -58,7 +61,7 @@ elseif ( isset($_POST['username']) && !isset($_POST['nom']) )
   if ( !empty( $infos_user ) )
   {
 
-    $question = $infos_user['question'];
+    $_SESSION['question'] = $infos_user['question'];
     $_SESSION['temp_id_user'] = $infos_user['id_user'];
 
     $request_infos -> closeCursor();
@@ -68,7 +71,7 @@ elseif ( isset($_POST['username']) && !isset($_POST['nom']) )
 
   else
   {
-    $account_state = 'inconnu';
+    $_SESSION['creation_compte'] = 'unknown';
   }
 }
 /*
@@ -96,7 +99,8 @@ elseif ( isset($_POST['reponse']) && !isset($_POST['nom']) )
 
   else
   {
-    $account_state = 'mauvaise_reponse';
+    $account_state = 'question_secrete';
+    $_SESSION['creation_compte'] = 'wrong_answer';
   }
 }
 
@@ -130,7 +134,8 @@ elseif ( isset($_POST['password']) && isset($_POST['passwordbis']) )
 
   else
   {
-    $account_state = 'non_modifie';
+    $account_state = 'bonne_reponse';
+    $_SESSION['creation_compte'] = 'not_modified';
   }
 }
 
@@ -147,6 +152,7 @@ in the database and we redirect him to the welcome page.
 elseif ( array_key_exists('nom', $_POST) )
 {
   $empty_fields = [];
+  $filled_fields = [];
   foreach ($_POST as $key => $value)
   {
     $val = trim($value);
@@ -154,12 +160,20 @@ elseif ( array_key_exists('nom', $_POST) )
     {
       array_push( $empty_fields, $key );
     }
+    else
+    {
+      if ($key != 'password' || $key != 'reponse')
+      {
+        $_SESSION[$key] = $val;
+      }
+    }
   }
 
   if ( !empty( $empty_fields ) )
   {
       $list_empty_fields = implode( ", ", $empty_fields);
-      $account_state = 'vide';
+      $_SESSION['creation_compte'] = 'vide';
+      $account_state = 'creation';
   }
 
   else
@@ -198,60 +212,76 @@ les informations requises.
 When a new user wants to create a account, we ask him all the needed
 informations.
 */
-else
+if ($account_state === 'creation')
 {
   redirectMainIfConnected();
   include('header.php');
 ?>
 
+  <div id="titre_connexion">
+
+    <h1>Veuillez renseigner vos données personnelles</h1>
+    <br>
+
+  </div>
+
+  <?php if ( $_SESSION['creation_compte'] === 'vide' ): ?>
+
     <div id="titre_connexion">
 
-      <h1>Veuillez renseigner vos données personnelles</h1>
-      <br>
+      <h2>Un ou plusieurs champs saisis sont vides :</h2>
+      <br><br>
+      <?php echo $list_empty_fields ?>
+      <br><br>
+      <p><strong>Merci de compléter le formulaire entièrement.</strong></p>
 
     </div>
 
-    <div id="page_connexion">
+  <?php endif; ?>
 
-      <form  method="post" action="creation_compte.php">
+  <?php displayMessage($_SESSION['creation_compte']); ?>
 
-        <div class="champs_connexion">
-          <label><strong>Nom</strong></label>
-          <input type="text" name="nom" autofocus required/>
-        </div>
+  <div id="page_connexion">
 
-        <div class="champs_connexion">
-          <label><strong>Prénom</strong></label>
-          <input type="text" name="prenom" required/>
-        </div>
+    <form  method="post" action="creation_compte.php">
 
-        <div class="champs_connexion">
-          <label><strong>Nom d'utilisateur</strong></label>
-          <input type="text" name="username" required/>
-        </div>
+      <div class="champs_connexion">
+        <label><strong>Nom</strong></label>
+        <input type="text" name="nom" autofocus <?php valueFilled('nom')?> required/>
+      </div>
 
-        <div class="champs_connexion">
-          <label><strong>Mot de passe</strong></label>
-          <input type="password" name="password" required/>
-        </div>
+      <div class="champs_connexion">
+        <label><strong>Prénom</strong></label>
+        <input type="text" name="prenom" <?php valueFilled('prenom')?> required/>
+      </div>
 
-        <div class="champs_connexion">
-          <label><strong>Question secrète</strong></label>
-          <input type="text" name="question" required/>
-        </div>
+      <div class="champs_connexion">
+        <label><strong>Nom d'utilisateur</strong></label>
+        <input type="text" name="username" <?php valueFilled('username')?> required/>
+      </div>
 
-        <div class="champs_connexion">
-          <label><strong>Réponse à la réponse secrète</strong></label>
-          <input type="password" name="reponse" required/>
-        </div>
+      <div class="champs_connexion">
+        <label><strong>Mot de passe</strong></label>
+        <input type="password" name="password" required/>
+      </div>
 
-        <div class="champs_connexion">
-          <input type="submit" value="Valider"/>
-        </div>
+      <div class="champs_connexion">
+        <label><strong>Question secrète</strong></label>
+        <input type="text" name="question" <?php valueFilled('question')?> required/>
+      </div>
 
-      </form>
+      <div class="champs_connexion">
+        <label><strong>Réponse à la réponse secrète</strong></label>
+        <input type="password" name="reponse" required/>
+      </div>
 
-    </div>
+      <div class="champs_connexion">
+        <input type="submit" value="Valider"/>
+      </div>
+
+    </form>
+
+  </div>
 
 <?php
 }
@@ -261,21 +291,19 @@ if ( $account_state === "mdp_oublie" )
   include('header.php');
 ?>
 
-
       <div id="titre_connexion">
-
         <h1>Afin de réinitialiser votre mot de passe,</h1>
-        <h2>merci de renseigner votre nom d'utilsateur</h2>
         <br>
-
       </div>
+
+      <?php displayMessage($_SESSION['creation_compte']); ?>
 
       <div id="page_connexion">
 
           <form  method="post" action="creation_compte.php">
 
             <div class="champs_connexion">
-              <label>Merci de saisir le nom d'utilisateur défini lors de la création de votre compte</label>
+              <label><strong>merci de saisir le nom d'utilisateur défini lors de la création de votre compte</strong></label>
               <br>
               <input type="text" name="username" autofocus required/>
             </div>
@@ -295,50 +323,29 @@ if ( $account_state === 'question_secrete' )
   include('header.php');
 ?>
 
+  <div id="titre_connexion">
+    <h1>Veuillez répondre à votre question secrète</h1>
+    <br>
+  </div>
 
-    <div id="titre_connexion">
+  <?php displayMessage($_SESSION['creation_compte']); ?>
 
-      <h1>Veuillez répondre à votre question secrète</h1>
-      <br>
-    </div>
+  <div id="page_connexion">
 
-    <div id="page_connexion">
+    <form  method="post" action="creation_compte.php">
 
-        <form  method="post" action="creation_compte.php">
+      <div class="champs_connexion">
+        <label><strong><?php echo $_SESSION['question']; ?></strong></label>
+        <br>
+        <input type="password" name="reponse"  autofocus required/>
+      </div>
 
-          <div class="champs_connexion">
-            <label><strong><?php echo $question; ?></strong></label>
-            <br>
-            <input type="password" name="reponse"  autofocus required/>
-          </div>
+      <div class="champs_connexion">
+        <input type="submit" value="Valider"/>
+      </div>
+    </form>
 
-          <div class="champs_connexion">
-              <input type="submit" value="Valider"/>
-          </div>
-        </form>
-
-    </div>';
-
-
-<?php
-}
-
-if ( $account_state === 'inconnu' )
-{
-  header("Refresh:3; url=creation_compte.php?mdp=oublie");
-  include('header.php');
-?>
-
-
-    <div id="titre_connexion">
-
-      <h1>Utilisateur inconnu</h1>
-      <br>
-      <h2>Merci de rentrer un nom d'utilisateur existant!</h2>
-      <br>
-
-    </div>
-
+  </div>';
 
 <?php
 }
@@ -348,57 +355,37 @@ if ( $account_state === 'bonne_reponse' )
   include('header.php');
 ?>
 
+  <div id="titre_connexion">
 
-    <div id="titre_connexion">
+    <h1>Veuillez saisir votre nouveau mot de passe</h1>
+    <br>
 
-      <h1>Veuillez saisir votre nouveau mot de passe</h1>
-      <br>
+  </div>
 
-    </div>
+  <?php displayMessage($_SESSION['creation_compte']); ?>
 
-    <div id="page_connexion">
+  <div id="page_connexion">
 
-        <form  method="post" action="creation_compte.php">
+    <form  method="post" action="creation_compte.php">
 
-          <div class="champs_connexion">
-            <label><strong>Nouveau mot de passe</strong></label>
-            <br>
-            <input type="password" name="password" autofocus required/>
-          </div>
-
-          <div class="champs_connexion">
-            <label><strong>Veuillez le saisir à nouveau</strong></label>
-            <br>
-            <input type="password" name="passwordbis" required/>
-          </div>
-
-          <div class="champs_connexion">
-              <input type="submit" value="Valider"/>
-          </div>
-        </form>
-
-    </div>;
-
-
-<?php
-}
-
-if ( $account_state === 'mauvaise_reponse' )
-{
-  header("Refresh:3; url=creation_compte.php?mdp=oublie");
-  include('header.php');
-?>
-
-
-      <div id="titre_connexion">
-
-        <h1>Réponse incorrecte !</h1>
+      <div class="champs_connexion">
+        <label><strong>Nouveau mot de passe</strong></label>
         <br>
-        <h2>Merci de vous identifier à nouveau</h2>
-        <br>
-
+        <input type="password" name="password" autofocus required/>
       </div>
 
+      <div class="champs_connexion">
+        <label><strong>Veuillez le saisir à nouveau</strong></label>
+        <br>
+        <input type="password" name="passwordbis" required/>
+      </div>
+
+      <div class="champs_connexion">
+          <input type="submit" value="Valider"/>
+      </div>
+    </form>
+
+  </div>;
 
 <?php
 }
@@ -409,32 +396,13 @@ if ( $account_state === 'modifie' )
     include('header.php');
 ?>
 
+    <div id="titre_connexion">
 
-      <div id="titre_connexion">
+      <h2>Vos modifications ont bien été prises en compte</h2>
+      <br><br>
+      <p>Vous allez être redirigé vers la page d'accueil</p>
 
-        <h2>Vos modifications ont bien été prises en compte</h2>
-        <br><br>
-        <p>Vous allez être redirigé vers la page d'accueil</p>
-
-      </div>
-
-
-<?php
-}
-
-if ( $account_state === 'non_modifie' )
-{
-  header("Refresh:3; url=creation_compte.php?mdp=oublie");
-  include('header.php');
-?>
-
-      <div id="titre_connexion">
-
-        <h2>Vos modifications n'ont PAS été prises en compte!</h2>
-        <br><br>
-        <p><strong>Les 2 saisies de votre nouveau mot de passe ne sont pas identiques!</strong></p>
-
-      </div>
+    </div>
 
 <?php
 }
@@ -445,34 +413,17 @@ if ( $account_state === 'cree' )
   include('header.php');
 ?>
 
-      <div id="titre_connexion">
+    <div id="titre_connexion">
 
-        <h2>Vos informations ont bien été enregistrées.</h2>
-        <br><br>
-        <p>Vous allez être redirigé vers la page d'accueil</p>
+      <h2>Vos informations ont bien été enregistrées.</h2>
+      <br><br>
+      <p>Vous allez être redirigé vers la page d'accueil</p>
 
-      </div>
-
-<?php
-}
-
-if ( $account_state === 'vide' )
-{
-  header("Refresh:6; url=creation_compte.php");
-  include('header.php');
-?>
-
-      <div id="titre_connexion">
-
-        <h2>Un ou plusieurs champs saisis sont vides :</h2>
-        <br><br>
-        <?php echo $list_empty_fields ?>
-        <br><br>
-        <p><strong>Merci de compléter le formulaire entièrement.</strong></p>
-
-      </div>
+    </div>
 
 <?php
 }
+
+unset($_SESSION);
 
 include('footer.php');

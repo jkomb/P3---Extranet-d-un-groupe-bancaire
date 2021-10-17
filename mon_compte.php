@@ -10,7 +10,7 @@ $page = 'modification';
 
 $bdd = connexionBDD();
 
-$my_account = "";
+$_SESSION['mon_compte'] = '';
 
 if ( empty($_POST) )
 {
@@ -18,7 +18,7 @@ if ( empty($_POST) )
 
   if ( !empty($_FILES['image']) )
   {
-    uploadAvatar($bdd, $_FILES['image']);
+    $_SESSION['mon_compte'] = uploadAvatar($bdd, $_FILES['image']);
   }
 }
 
@@ -26,10 +26,10 @@ elseif (isset($_POST['delete_avatar']) && !empty($_POST['delete_avatar']))
 {
   if ( array_key_exists('avatar', $_SESSION) )
   {
-    deleteAvatar($bdd);
+    $_SESSION['mon_compte'] = deleteAvatar($bdd);
   }
 
-  header('Location: my_account.php');
+  header('Location: mon_compte.php');
   exit;
 }
 
@@ -59,6 +59,7 @@ else
 
   $user_data = array_filter($user_entries);
 
+  //construction dynamique de la requête SQL pour ne mettre à jour que les données saisies
   foreach ( $user_data as $key => $value )
   {
     array_push( $keys, sprintf( '%s= :%s', $key, $key ) );
@@ -91,7 +92,7 @@ else
   $user_entries = array();
   $user_data = array();
 
-  $my_account = 'modifie';
+  $_SESSION['mon_compte'] = 'modified';
 }
 
 
@@ -113,9 +114,11 @@ if ( $my_account  === 'infos' )
     <h3>Si vous le souhaitez, vous pouvez modifier vos informations personnelles ci-dessous :</h3>
   </div>
 
+  <?php displayMessage($_SESSION['mon_compte']); ?>
+
   <div id="page_connexion">
     <div>
-      <form  method="post" action="my_account.php" class="champs_connexion">
+      <form  method="post" action="mon_compte.php" class="champs_connexion">
 
         <div class="champs_connexion">
             <label><strong>Nom</strong></label>
@@ -148,24 +151,23 @@ if ( $my_account  === 'infos' )
 
       </form>
       <br><br>
-      <form action="my_account.php" method="post" enctype="multipart/form-data">
+      <form action="mon_compte.php" method="post" enctype="multipart/form-data">
 
         <div class="champs_connexion">
             <label><strong>Insérer votre avatar </strong>(taille max. : 8 mo)</label>
             <br>
             <input type="file" name="image"/>
             <br>
-            <input type="submit" value="Importer" />
-        </div>
-        <div class="champs_connexion">
-            <label><strong>Supprimer votre avatar</strong></label>
-            <br>
-            <input type="submit" name="delete_avatar" value="Supprimer" />
+            <input type="submit" value="Importer"/>
         </div>
 
+        <?php buttonDeleteAvatar()?>
+
       </form>
+
       <br><br>
-      <form  method="post" action="my_account.php">
+
+      <form  method="post" action="mon_compte.php">
 
         <label><strong>Modification du mot de passe</strong></label>
         <br><br>
@@ -189,98 +191,9 @@ if ( $my_account  === 'infos' )
         </div>
 
       </form>
-
     </div>
   </div>
 
-
-<?php
-}
-
-if ( $my_account  === 'modifie' )
-{
-  header("Refresh:3; url=my_account.php");
-  include('header.php');
-?>
-
-        <div id="titre_connexion">
-          <h2>Vos informations ont bien été enregistrées.</h2>
-        </div>
-
-<?php
-}
-
-if ( $my_account  === 'problem_file' )
-{
-  header("Refresh:4; url=my_account.php");
-  include('header.php');
-?>
-
-        <div id="titre_connexion">
-          <h2>Il y a eu un problème lors de l'importation de votre fichier.</h2>
-          <br><br>
-          <p>Veuillez essayer avec un autre fichier ou contacter notre support dans la rubrique <strong>Contact</strong>
-            situé en bas de page</p>
-        </div>
-
-<?php
-}
-
-if ( $my_account  === 'exceeded_size' )
-{
-  header("Refresh:4; url=my_account.php");
-  include('header.php');
-?>
-
-        <div id="titre_connexion">
-          <h2>Votre fichier est trop volumineux.</h2>
-          <br><br>
-          <p>Veuillez essayer avec un autre fichier ou tentez de le compresser avant de l'importer à nouveau.</p>
-        </div>
-
-<?php
-}
-
-if ( $my_account  === 'wrong_format' )
-{
-  header("Refresh:3; url=my_account.php");
-  include('header.php');
-?>
-
-        <div id="titre_connexion">
-          <h2>Votre fichier n'a pas le bon format.</h2>
-          <br><br>
-          <p>Les formats d'image autorisés sont : JPEG, JPG, GIF, PNG .</p>
-        </div>
-
-<?php
-}
-
-if ( $my_account  === 'upload_issue' )
-{
-  header("Refresh:5; url=my_account.php");
-  include('header.php');
-?>
-
-    <h2>Il y a eu un problème lors de l'importation de votre fichier et nous nous en excusons.</h2>
-    <br><br>
-    <p>Veuillez essayer avec un autre fichier ou contacter notre support dans la rubrique <strong>Contact</strong>
-      situé en bas de page</p>
-
-<?php
-}
-
-
-if ( $my_account  === 'deletion_issue' )
-{
-  header("Refresh:5; url=my_account.php");
-  include('header.php');
-?>
-
-    <h2>Nous n'avons pas pu supprimer votre avatar et nous nous en excusons.</h2>
-    <br><br>
-    <p>Veuillez essayer avec un autre fichier ou contacter notre support dans la rubrique <strong>Contact</strong>
-      situé en bas de page</p>
 
 <?php
 }

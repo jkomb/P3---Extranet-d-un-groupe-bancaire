@@ -124,7 +124,7 @@ if ( $affichage_header === 'complet' )
         </div>
 
         <div class="nav_pres_acteur">
-          <a href="my_account.php">Mon Compte</a>
+          <a href="mon_compte.php">Mon Compte</a>
         </div>
 
       </div>
@@ -151,7 +151,7 @@ if ( $affichage_header === 'principale' )
     </div>
 
     <div class = "nav_pres_acteur">
-      <a href="my_account.php">Mon Compte</a>
+      <a href="mon_compte.php">Mon Compte</a>
     </div>
 
   </div>

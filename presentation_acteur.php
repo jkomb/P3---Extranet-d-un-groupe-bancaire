@@ -59,9 +59,6 @@ if ( isset($_GET['acteur']) )
       $affichage_post = false;
     }
 
-    //Vérification de la qualité d'administrateur de l'utilisateur connecté
-    $admin = isAdmin($bdd, $_SESSION['id_user']);
-
     //Récupération du nombre de votes dans la base de données
     $number_likes = intval( $info_acteur['total_likes'] );
     $number_dislikes = intval( $info_acteur['total_dislikes'] );
@@ -172,6 +169,9 @@ if ( isset($_GET['acteur']) )
     header('Location: presentation_acteur.php?acteur='.$id_acteur_choisi);
     exit;
   }
+
+  //Vérification de la qualité d'administrateur de l'utilisateur connecté
+  $admin = isAdmin($bdd, $_SESSION['id_user']);
 
   //Supression des commentaires sélectionnés par l'utilisateur administrateur
   if( isset($_POST['delete_posts']) && !empty($_POST['delete_posts']) )

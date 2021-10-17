@@ -23,7 +23,7 @@ if ( isset($_POST['username']) && isset($_POST['password']) )
 
   if ( empty($infos_user) )
   {
-    $user_state = 'not_found';
+    $_SESSION['index'] = 'not_found';
   }
 
   else
@@ -41,13 +41,15 @@ if ( isset($_POST['username']) && isset($_POST['password']) )
       $_SESSION['reponse'] = $infos_user['reponse'];
       $_SESSION['avatar'] = $infos_user['avatar'];
 
+      unset($_SESSION['index']);
+
       header('Location: main.php');
       exit;
     }
 
     else
     {
-      $user_state = 'not_found';
+      $_SESSION['index'] = 'not_found';
     }
   }
   header('Location: index.php');
@@ -59,67 +61,54 @@ Affichage de la page
 Display of the page
 */
 
-if( isConnected() === false || ( isset($user_state) && $user_state === 'not_found' ) )
-{
-  if (  isset($user_state) && $user_state === 'not_found' )
-  {
-    header("Refresh:3; url=index.php");
-    include('header.php');
-?>
-
-    <div id="titre_connexion">
-
-      <h1>Vos identifiants ne sont pas corrects !</h1>
-      <br><br><br>
-      <h2>Vous allez être redirigé vers la page d'accueil.</h2>
-
-    </div>
-
-<?php
-  }
-
 else
 {
   include('header.php');
 ?>
 
-    <div id="titre_connexion">
+  <div id="titre_connexion">
 
-      <h1>Veuillez vous connecter</h1>
-      <br><br><br>
+    <h1>Veuillez vous connecter</h1>
+    <br><br>
 
-    </div>
+    <?php if( isset($_SESSION['index']) && $_SESSION['index'] === 'not_found' ):?>
+      <h2>Vos identifiants ne sont pas corrects !</h2>
+      <br><br
+    <?php endif;?>
 
-    <div id="page_connexion">
+  </div>
 
-        <div class="champs_connexion">
+  <div id="page_connexion">
 
-          <form  method="post" action="index.php">
+      <div class="champs_connexion">
 
-            <div class="champs_connexion">
-              <input type="text" name="username" placeholder="Nom d'utilisateur" autofocus required/>
-            </div>
+        <form  method="post" action="index.php">
 
-            <div class="champs_connexion">
-              <input type="password" name="password" placeholder="Mot de passe" required/>
-            </div>
-
-            <div class="champs_connexion">
-              <input type="submit" value="Valider"/>
-            </div>
-
-          </form>
-
-          <div>
-            <a href="creation_compte.php?mdp=oublie" id="pwd_forgotten">J'ai oublié mon mot de passe</a>
+          <div class="champs_connexion">
+            <input type="text" name="username" placeholder="Nom d'utilisateur" autofocus required/>
           </div>
 
-      </div>
+          <div class="champs_connexion">
+            <input type="password" name="password" placeholder="Mot de passe" required/>
+          </div>
+
+          <div class="champs_connexion">
+            <input type="submit" value="Valider"/>
+          </div>
+
+        </form>
+
+        <div>
+          <a href="creation_compte.php?mdp=oublie" id="pwd_forgotten">J'ai oublié mon mot de passe</a>
+        </div>
 
     </div>
-  
+
+  </div>
+
 <?php
-  }
 }
+
+unset($_SESSION['index']);
 
 include('footer.php');

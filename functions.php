@@ -18,7 +18,6 @@ function isConnected()
   if (isset( $_SESSION['id_user']) )
   {
     return true;
-    exit;
   }
 
   return array_key_exists('id_user', $_SESSION);
@@ -79,48 +78,54 @@ function uploadAvatar($bdd, $file)
 
   if ( is_uploaded_file($file['tmp_name'] ) === false )
   {
-    $my_account = 'problem_file';
+    return 'problem_file';
   }
-  else
+
+  if ( $file['size'] > $max_file_size_bytes )
   {
-    if ( $file['size'] > $max_file_size_bytes )
-    {
-      $my_account = 'exceeded_size';
-    }
-    else
-    {
-      $file_mimetype = mime_content_type($file['tmp_name']);
-      $authorized_mime_types = array( 'image/jpeg', 'image/jpg', 'image/png', 'image/gif');
+    return 'exceeded_size';
+  }
 
-      $verify_mime_type = array_search( $file_mimetype, $authorized_mime_types );
+  $file_mimetype = mime_content_type($file['tmp_name']);
+  $authorized_mime_types = array( 'image/jpeg', 'image/jpg', 'image/png', 'image/gif');
 
-      if ( $verify_mime_type === false )
-      {
-        $my_account = 'wrong_format';
-      }
-      else
-      {
-        $uploadName = $file['name'];
-        $extension = strtolower(substr($uploadName, strripos($uploadName, '.')+1));
-        $filename = uniqid(rand(),true) .'.'. $extension;
+  $verify_mime_type = array_search( $file_mimetype, $authorized_mime_types );
 
-        $save_path = "./uploads/".$filename;
+  if ( $verify_mime_type === false )
+  {
+    return 'wrong_format';
+  }
 
-        if ( !move_uploaded_file( $file['tmp_name'], $save_path ) )
-        {
-          $my_account = 'upload_issue';
-        }
-        else
-        {
-          $user_entries['avatar'] = $filename;
-          $_SESSION['avatar'] = $filename;
-          $modification = $bdd -> prepare('UPDATE accounts SET avatar= :avatar WHERE id_user= :id_user');
-          $modification -> execute( ['avatar' => $_SESSION['avatar'], 'id_user' => $_SESSION['id_user'] ] );
+  $uploadName = $file['name'];
+  $extension = strtolower(substr($uploadName, strripos($uploadName, '.')+1));
+  $filename = uniqid("",true) .'.'. $extension;
 
-          $modification -> closeCursor();
-        }
-      }
-    }
+  $save_path = "./uploads/".$filename;
+
+  if ( !move_uploaded_file( $file['tmp_name'], $save_path ) )
+  {
+    return 'upload_issue';
+  }
+
+  $user_entries['avatar'] = $filename;
+  $_SESSION['avatar'] = $filename;
+  $modification = $bdd -> prepare('UPDATE accounts SET avatar= :avatar WHERE id_user= :id_user');
+  $modification -> execute( ['avatar' => $_SESSION['avatar'], 'id_user' => $_SESSION['id_user'] ] );
+
+  $modification -> closeCursor();
+}
+
+function buttonDeleteAvatar()
+{
+  if (isset($_SESSION['avatar']))
+  {
+    ?>
+    <div class="champs_connexion">
+        <label><strong>Supprimer votre avatar</strong></label>
+        <br>
+        <input type="submit" name="delete_avatar" value="Supprimer"/>
+    </div>
+    <?php
   }
 }
 
@@ -131,15 +136,113 @@ function deleteAvatar($bdd)
     $bdd -> beginTransaction();
     $delete_avatar = $bdd -> prepare('UPDATE accounts SET avatar=NULL  WHERE id_user= :id_user');
     $delete_avatar -> execute( ['id_user' => $_SESSION['id_user']] );
-    $bdd -> commit();
-  }catch(Exception $e)
-    {
-      $bdd ->rollback();
-      $my_account = 'deletion_issue';
-      exit();
-    }
+
     unlink('./uploads/'.$_SESSION['avatar']);
     unset($_SESSION['avatar']);
 
+    $bdd -> commit();
     $delete_avatar -> closeCursor();
+  }catch(Exception $e)
+    {
+      $bdd ->rollback();
+      return 'deletion_issue';
+    }
+}
+
+function displayMessage($message)
+{
+  if (isset($message))
+  {
+    switch ($message)
+    {
+      //Page creation_compte
+      case 'not_modified':
+        ?>
+          <div id="titre_connexion">
+            <h2>Vos modifications n'ont PAS été prises en compte!</h2>
+            <br>
+            <p><strong>Les 2 saisies de votre nouveau mot de passe ne sont pas identiques!</strong></p>
+          </div>
+        <?php
+      break;
+      case 'unknown':
+        ?>
+          <div id="titre_connexion">
+            <h1>Utilisateur inconnu</h1>
+            <br>
+            <h2>Merci de rentrer un nom d'utilisateur existant!</h2>
+          </div>
+        <?php
+      break;
+      case 'wrong_answer':
+        ?>
+          <div id="titre_connexion">
+            <h1>Réponse incorrecte !</h1>
+            <br>
+            <h2>Merci de réessayer</h2>
+          </div>
+        <?php
+      break;
+
+      //Page mon_compte
+      case 'modified':
+        ?>
+          <div id="titre_connexion">
+            <h2>Vos informations ont bien été enregistrées.</h2>
+          </div>
+        <?php
+      break;
+      case 'problem_file':
+        ?>
+          <div id="titre_connexion">
+            <h2>Il y a eu un problème lors de l'importation de votre fichier.</h2>
+            <p>Veuillez essayer avec un autre fichier ou contacter notre support dans la rubrique <strong>Contact</strong>
+              situé en bas de page</p>
+          </div>
+        <?php
+      break;
+      case 'exceeded_size':
+        ?>
+          <div id="titre_connexion">
+            <h2>Votre fichier est trop volumineux.</h2>
+            <p>Veuillez essayer avec un autre fichier ou tentez de le compresser avant de l'importer à nouveau.</p>
+          </div>
+        <?php
+      break;
+      case 'wrong_format':
+        ?>
+          <div id="titre_connexion">
+            <h2>Votre fichier n'a pas le bon format.</h2>
+            <p>Les formats d'image autorisés sont : JPEG, JPG, GIF, PNG .</p>
+          </div>
+        <?php
+      break;
+      case 'upload_issue':
+        ?>
+          <div id="titre_connexion">
+            <h2>Il y a eu un problème lors de l'importation de votre fichier et nous nous en excusons.</h2>
+            <p>Veuillez essayer avec un autre fichier ou contacter notre support dans la rubrique <strong>Contact</strong>
+              situé en bas de page</p>
+          </div>
+        <?php
+      break;
+      case 'deletion_issue':
+        ?>
+          <div id="titre_connexion">
+            <h2>Nous n'avons pas pu supprimer votre avatar et nous nous en excusons.</h2>
+            <p>Veuillez essayer avec un autre fichier ou contacter notre support dans la rubrique <strong>Contact</strong>
+              situé en bas de page</p>
+          </div>
+        <?php
+      break;
+    }
+  }
+}
+
+function valueFilled($value)
+{
+  if (isset($_SESSION[$value]))
+  {
+    echo 'value='.$_SESSION[$value];
+  }
 }
