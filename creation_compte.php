@@ -424,6 +424,6 @@ if ( $account_state === 'cree' )
 <?php
 }
 
-unset($_SESSION);
+$_SESSION = array();
 
 include('footer.php');

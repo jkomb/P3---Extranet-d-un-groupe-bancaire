@@ -12,6 +12,8 @@ $bdd = connexionBDD();
 
 $_SESSION['mon_compte'] = '';
 
+$my_account = 'infos';
+
 if ( empty($_POST) )
 {
   $my_account = 'infos';
@@ -197,5 +199,7 @@ if ( $my_account  === 'infos' )
 
 <?php
 }
+
+unset($_SESSION['mon_compte']);
 
 include('footer.php');
